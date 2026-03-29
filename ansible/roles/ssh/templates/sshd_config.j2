@@ -12,7 +12,7 @@ LogLevel VERBOSE
 # additional settings
 #########################
 AuthorizedKeysFile /etc/ssh/authorized_keys/%u .ssh/authorized_keys
-AllowGroups {{ ssh_group }} {{ sftp_group }}
+AllowGroups {{ cloudymc_ssh_group }} {{ cloudymc_sftp_group }}
 HostbasedAuthentication no
 PasswordAuthentication no
 PermitEmptyPasswords no
@@ -38,6 +38,6 @@ Compression no
 Protocol 2
 
 Subsystem sftp internal-sftp -f AUTHPRIV -l INFO
-Match Group {{ sftp_group }}
-    ChrootDirectory %h
-    ForceCommand internal-sftp
+Match Group {{ cloudymc_sftp_group }}
+	ChrootDirectory %h
+	ForceCommand internal-sftp
