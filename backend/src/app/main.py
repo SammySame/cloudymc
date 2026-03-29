@@ -48,8 +48,14 @@ def apply_config():
 
 
 def run_pipeline(config: dict, apply=False):
+	TERRAFORM_PATH = os.path.join(PROJECT_ROOT_DIR, 'terraform')
+	ANSIBLE_PATH = os.path.join(PROJECT_ROOT_DIR, 'ansible')
+	ANSIBLE_VARS_MAP_PATH = os.path.join(MODULE_ROOT_DIR, 'data', 'ansible_map.json')
+	TF_VARS_PATH = os.path.join(PROJECT_ROOT_DIR, 'terraform', 'terraform.tfvars.json')
+	TF_VARS_MAP_PATH = os.path.join(MODULE_ROOT_DIR, 'data', 'terraform_oci_map.json')
+
 	try:
-		tf_vars_map = load_json(os.path.join(MODULE_ROOT_DIR, 'data', 'terraform_oci_map.json'))
+		tf_vars_map = load_json(TF_VARS_MAP_PATH)
 	except Exception as e:
 		yield f'data: {json.dumps({"error": str(e)})}\n\n'
 		return
@@ -58,25 +64,29 @@ def run_pipeline(config: dict, apply=False):
 	tf_vars = map_json_keys(flat_config, tf_vars_map)
 
 	try:
-		save_json(tf_vars, os.path.join(PROJECT_ROOT_DIR, 'terraform', 'terraform.tfvars.json'))
+		save_json(tf_vars, TF_VARS_PATH)
 	except Exception as e:
 		yield f'data: {json.dumps({"error": str(e)})}\n\n'
 		return
 
 	yield f'data: {json.dumps({"debug": tf_vars})}\n\n'
 
-	for event in run_terraform(os.path.join(PROJECT_ROOT_DIR, 'terraform'), apply):
+	for event in run_terraform(TERRAFORM_PATH, apply):
 		yield event
 		data = json.loads(event.replace('data: ', ''))
 		if data.get('done') and data.get('returnCode') == 0:
-			return
-		# 	try:
-		# 		ansible_vars_map = load_json(os.path.join(MODULE_ROOT_DIR, 'data', 'ansible_map.json'))
-		# 	except Exception as e:
-		# 		yield f"data: {json.dumps({'error': str(e)})}\n\n"
-		# 		return
-		# 	ansible_vars = map_json_keys(flat_config, ansible_vars_map)
-		# 	yield from run_ansible(ansible_vars, os.path.join(PROJECT_ROOT_DIR, 'ansible'))
+			try:
+				ansible_vars_map = load_json(ANSIBLE_VARS_MAP_PATH)
+			except Exception as e:
+				yield f'data: {json.dumps({"error": str(e)})}\n\n'
+				return
+
+			ansible_inventory: str = get_terraform_output('ansible_inventory', TERRAFORM_PATH)
+			if not ansible_inventory:
+				yield f'data: {json.dumps({"error": "The returned Ansible inventory is empty"})}\n\n'
+
+			ansible_vars = map_json_keys(flat_config, ansible_vars_map)
+			yield from run_ansible(ansible_vars, ansible_inventory, ANSIBLE_PATH)
 
 
 def run_terraform(cwd: str = '.', apply=False):
@@ -100,9 +110,18 @@ def run_terraform(cwd: str = '.', apply=False):
 	yield f'data: {json.dumps({"stage": "terraform", "done": True, "returnCode": process.returncode})}\n\n'
 
 
-def run_ansible(variables: dict, cwd: str = '.'):
+def get_terraform_output(name: str, cwd: str = '.'):
+	process = subprocess.run(
+		['terraform', 'output', '-raw', '-no-color', name], cwd=cwd, capture_output=True, text=True
+	)
+	return process.stdout
+
+
+def run_ansible(variables: dict, inventory: str, cwd: str = '.', apply=False):
 	process = subprocess.Popen(
-		['ansible-playbook', 'site.yml', '-e', json.dumps(variables)],
+		['ansible-playbook', '-i', inventory, '-e', json.dumps(variables)]
+		if apply
+		else ['ansible-playbook', '-i', inventory, '-e', json.dumps(variables), '--check'],
 		cwd=cwd,
 		stdin=subprocess.PIPE,
 		stdout=subprocess.PIPE,
