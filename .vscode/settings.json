@@ -41,6 +41,9 @@
 	"[yaml]": {
 		"editor.defaultFormatter": "redhat.vscode-yaml"
 	},
+	"[jinja]": {
+		"editor.defaultFormatter": "samuelcolvin.jinjahtml"
+	},
 	"[terraform]": {
 		"editor.defaultFormatter": "hashicorp.terraform",
 		"editor.formatOnSave": true,

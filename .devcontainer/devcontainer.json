@@ -44,7 +44,8 @@
 				"EditorConfig.EditorConfig",
 				"dbaeumer.vscode-eslint",
 				"esbenp.prettier-vscode",
-				"timonwong.shellcheck"
+				"timonwong.shellcheck",
+				"samuelcolvin.jinjahtml"
 			]
 		}
 	},
