@@ -119,9 +119,15 @@ def get_terraform_output(name: str, cwd: str = '.'):
 
 def run_ansible(variables: dict, inventory: str, cwd: str = '.', apply=False):
 	process = subprocess.Popen(
-		['ansible-playbook', '-i', inventory, '-e', json.dumps(variables)]
-		if apply
-		else ['ansible-playbook', '-i', inventory, '-e', json.dumps(variables), '--check'],
+		[
+			'ansible-playbook',
+			'-i',
+			'/dev/stdin',
+			'-e',
+			json.dumps(variables),
+			'site.yml',
+			'--check' if not apply else '',
+		],
 		cwd=cwd,
 		stdin=subprocess.PIPE,
 		stdout=subprocess.PIPE,
@@ -130,7 +136,10 @@ def run_ansible(variables: dict, inventory: str, cwd: str = '.', apply=False):
 		bufsize=1,
 	)
 
-	assert process.stdout is not None
+	assert process.stdout and process.stdin is not None
+	process.stdin.write(inventory)
+	process.stdin.close()
+
 	for line in process.stdout:
 		yield f'data: {json.dumps({"stage": "ansible", "line": line.rstrip()})}\n\n'
 
