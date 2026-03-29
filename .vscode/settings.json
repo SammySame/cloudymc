@@ -10,7 +10,6 @@
 	"eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
 	"js/ts.tsdk.path": "./frontend/node_modules/typescript/lib",
 	"ansible.validation.lint.enabled": true,
-	"ansible.validation.lint.autoFixOnSave": true,
 	"editor.defaultFormatter": null,
 	"[javascript]": {
 		"editor.defaultFormatter": "esbenp.prettier-vscode"
@@ -37,7 +36,7 @@
 		"editor.defaultFormatter": "esbenp.prettier-vscode"
 	},
 	"[ansible]": {
-		"editor.defaultFormatter": "redhat.vscode-yaml"
+		"editor.defaultFormatter": "redhat.ansible"
 	},
 	"[yaml]": {
 		"editor.defaultFormatter": "redhat.vscode-yaml"
