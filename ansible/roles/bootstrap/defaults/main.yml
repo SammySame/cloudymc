@@ -1,7 +1,7 @@
 cloudymc_ansible_ssh_public_key_file:
 cloudymc_system_timezone: Etc/UTC
 
-cloudymc_ansible_username: ansible
+cloudymc_ansible_user: ansible
 cloudymc_ansible_group: ansible
 cloudymc_sudo_group: sudousers
 cloudymc_su_group: suusers

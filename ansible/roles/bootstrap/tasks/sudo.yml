@@ -26,8 +26,8 @@
 - name: enable passwordless sudo for the ansible user
   become: true
   ansible.builtin.copy:
-    dest: /etc/sudoers.d/20-{{ cloudymc_ansible_username }}
-    content: "{{ cloudymc_ansible_username }} ALL=(ALL) NOPASSWD: ALL"
+    dest: /etc/sudoers.d/20-{{ cloudymc_ansible_user }}
+    content: "{{ cloudymc_ansible_user }} ALL=(ALL) NOPASSWD: ALL"
     owner: root
     group: root
     mode: "0440"
