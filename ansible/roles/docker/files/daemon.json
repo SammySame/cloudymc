@@ -1,0 +1,14 @@
+{
+	"log-driver": "json-file",
+	"log-opts": {
+		"max-file": "5",
+		"max-size": "20m"
+	},
+	"default-ulimits": {
+		"nofile": {
+			"Name": "nofile",
+			"Hard": 4096,
+			"Soft": 4096
+		}
+	}
+}

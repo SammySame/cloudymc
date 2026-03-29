@@ -1,0 +1,60 @@
+- name: create "sshd_config.d" directory
+  become: true
+  ansible.builtin.file:
+    path: /etc/ssh/sshd_config.d
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: ensure that config files are included by the ssh service
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    state: present
+    regexp: ^Include\s+\/etc\/ssh\/sshd_config\.d\/\*\.conf$
+    line: "Include /etc/ssh/sshd_config.d/*.conf"
+  notify: restart ssh service
+
+- name: disable older sftp subsystem
+  become: true
+  ansible.builtin.replace:
+    path: /etc/ssh/sshd_config
+    regexp: ^Subsystem\s+sftp\s+/usr/lib/openssh/sftp-server$
+    replace: "#Subsystem       sftp    /usr/lib/openssh/sftp-server"
+  notify: restart ssh service
+
+- name: create the global authorized keys folder
+  become: true
+  ansible.builtin.file:
+    path: /etc/ssh/authorized_keys
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: create ssh config file
+  become: true
+  ansible.builtin.template:
+    src: sshd_config.j2
+    dest: /etc/ssh/sshd_config.d/20-ansible-hardening.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: restart ssh service
+
+- name: remove short diffie diffie-hellman
+  become: true
+  ansible.builtin.shell:
+    creates: /etc/ssh/moduli.short
+    executable: /bin/bash
+    cmd: |
+      set -o pipefail
+      cp /etc/ssh/moduli /etc/ssh/moduli.short
+      awk '$5 >= 3071' /etc/ssh/moduli | tee /etc/ssh/moduli.tmp
+      if ! cmp /etc/ssh/moduli /etc/ssh/moduli.tmp; then
+        mv /etc/ssh/moduli.tmp /etc/ssh/moduli
+      fi
+  register: moduli_output
+  changed_when: "'differ:' in moduli_output.stdout"
+  notify: restart ssh service

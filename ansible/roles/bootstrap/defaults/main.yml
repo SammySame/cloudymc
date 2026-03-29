@@ -1,0 +1,9 @@
+ansible_ssh_public_key_file:
+system_timezone: Etc/UTC
+
+ansible_user_name: ansible
+ansible_group: ansible
+sudo_group: sudousers
+su_group: suusers
+sftp_group: sftpusers
+ssh_group: sshusers

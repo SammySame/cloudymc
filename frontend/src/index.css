@@ -1,0 +1,42 @@
+.custom-array-title {
+	font-weight: normal;
+	margin-bottom: 0.5rem;
+}
+
+/* Sub object styling */
+.custom-child-object > div > div > h5 {
+	font-weight: normal;
+	font-size: 1.25rem !important;
+}
+
+/* Top level object styling */
+.custom-root-object h5 {
+	font-weight: bold;
+	font-size: 1.5rem !important;
+}
+
+/* Make invalid fields stand out more */
+.p-component.p-invalid {
+	border-width: 0.15rem;
+}
+
+/* Hide password strength panel */
+.p-password-panel {
+	display: none;
+}
+
+/* Make placeholder text stand out more */
+.p-inputtext::placeholder {
+	font-style: italic;
+	opacity: 0.6;
+}
+
+/* Move the array of objects object panel of buttons up */
+.rjsf-field-array-of-object div:has(> div > .rjsf-array-item-remove) {
+	top: -15px !important;
+}
+
+/* Make checkboxes border red when invalid */
+.rjsf-field-boolean.rjsf-field-error .p-checkbox-box {
+	border-color: rgb(226, 76, 76);
+}

@@ -1,0 +1,53 @@
+{
+	"name": "CloudyMC",
+	"build": {
+		"dockerfile": "../Dockerfile",
+		"context": "..",
+		"target": "dev",
+		"args": {
+			"SSH_KEYS_PATH": "/opt/ssh_keys",
+			"USERNAME": "vscode",
+			"PUID": "1000",
+			"PGID": "1000"
+		}
+	},
+	"workspaceFolder": "/app",
+	"workspaceMount": "source=${localWorkspaceFolder},target=${containerWorkspaceFolder},type=bind,consistency=cached",
+	"mounts": [
+		"source=${localEnv:HOME}/.gitconfig,target=/root/.gitconfig,type=bind,consistency=cached,readonly",
+		"source=${localEnv:HOME}/.ssh/cloudymc,target=/opt/ssh_keys,type=bind,readonly",
+		"source=${localWorkspaceFolderBasename}-node_modules,target=${containerWorkspaceFolder}/frontend/node_modules,type=volume,Z"
+	],
+	"postCreateCommand": "pre-commit install && cd ./terraform && terraform init -input=false",
+	"forwardPorts": [5173, 5000],
+	"portsAttributes": {
+		"5173": {
+			"label": "Frontend",
+			"onAutoForward": "openBrowser"
+		},
+		"5000": {
+			"label": "Backend",
+			"onAutoForward": "silent"
+		}
+	},
+	"remoteEnv": {
+		"XDG_RUNTIME_DIR": "/tmp",
+		"WAYLAND_DISPLAY": "${env:WAYLAND_DISPLAY}",
+		"LANG": "C.utf8"
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-python.python",
+				"hashicorp.terraform",
+				"redhat.ansible",
+				"EditorConfig.EditorConfig",
+				"dbaeumer.vscode-eslint",
+				"esbenp.prettier-vscode",
+				"timonwong.shellcheck"
+			]
+		}
+	},
+	"securityOpt": ["no-new-privileges:true"],
+	"runArgs": ["--cap-drop=ALL"]
+}

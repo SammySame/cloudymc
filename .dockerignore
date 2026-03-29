@@ -1,0 +1,108 @@
+# Docker specific
+.github/
+.git/
+docs/
+.gitignore
+README.md
+
+# Development Environment
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+.idea/
+.zed/
+
+# Project specific
+/config/user/
+
+# General
+*.env
+logs
+*.log
+
+# Node.js
+node_modules/
+dist/
+.vite/
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+.eslintcache
+*.tsbuildinfo
+npm-debug.log*
+
+# Python
+__pycache__/
+.cache/
+pip-log.txt
+pip-delete-this-directory.txt
+.ruff_cache
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraform.tfstate.lock.info
+.terraformrc
+terraform.rc
+crash.log
+crash.*.log
+
+# Ansible
+group_vars/
+host_vars/
+.ansible/
+*.retry
+hosts.yml
+
+################
+# OS Specific
+################
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+nohup.out
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# OSX
+.DS_Store
+__MACOSX/
+.AppleDouble
+.LSOverride
+Icon\[\]
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk

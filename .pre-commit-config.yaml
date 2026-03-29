@@ -1,0 +1,58 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
+      - id: end-of-file-fixer
+      - id: detect-private-key
+      - id: check-toml
+      - id: check-json
+  - repo: local
+    hooks:
+      - id: eslint
+        name: ESLint
+        language: system
+        entry: npx eslint --max-warnings=0 --config frontend/eslint.config.js frontend/
+        types_or: [javascript, jsx, ts, tsx]
+        pass_filenames: true
+      - id: prettier
+        name: Prettier
+        language: system
+        entry: npx prettier --write
+        types_or: [javascript, jsx, ts, tsx, css, html, json]
+        pass_filenames: true
+      - id: ruff-check
+        name: Ruff Lint
+        language: system
+        entry: ruff check --fix --force-exclude --config ./backend/pyproject.toml
+        types_or: [python, pyi]
+        files: backend/
+        pass_filenames: true
+      - id: ruff-format
+        name: Ruff Format
+        language: system
+        entry: ruff format --force-exclude --config ./backend/pyproject.toml
+        types_or: [python, pyi]
+        files: backend/
+        pass_filenames: true
+      - id: ansible-lint
+        name: Ansible Lint
+        language: system
+        entry: ansible-lint --project-dir ./ansible ./ansible
+        files: ansible/
+        pass_filenames: false
+      - id: terraform-fmt
+        name: Terraform Format
+        language: system
+        entry: terraform -chdir=terraform/ fmt -write=true -recursive ./
+        types: [terraform]
+        files: terraform/
+        pass_filenames: false
+      - id: terraform-validate
+        name: Terraform Validate
+        language: system
+        entry: terraform -chdir=terraform/ validate
+        types: [terraform]
+        files: terraform/
+        pass_filenames: false

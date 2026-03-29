@@ -1,0 +1,61 @@
+{
+	"$id": "main",
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"type": "object",
+	"properties": {
+		"identifier": {
+			"type": "string",
+			"pattern": "^[a-zA-Z0-9_-]+$",
+			"default": "mc-instance"
+		},
+		"timeZone": {
+			"type": "string",
+			"default": "Etc/UTC"
+		},
+		"defaultSshKeys": {
+			"type": "array",
+			"items": { "type": "string", "minLength": 1 },
+			"minItems": 1
+		},
+		"sftpSshKeys": {
+			"type": "array",
+			"items": { "type": "string", "minLength": 1 },
+			"minItems": 1
+		},
+		"ansibleSshKey": {
+			"type": "string",
+			"minLength": 1
+		},
+		"minecraft": { "$ref": "./minecraft.schema.json" },
+		"providerType": {
+			"type": "string",
+			"enum": ["oci"],
+			"default": "none"
+		}
+	},
+	"required": [
+		"identifier",
+		"timeZone",
+		"defaultSshKeys",
+		"sftpSshKeys",
+		"ansibleSshKey",
+		"minecraft",
+		"providerType"
+	],
+	"allOf": [
+		{
+			"if": {
+				"properties": {
+					"providerType": { "const": "oci" }
+				}
+			},
+			"then": {
+				"properties": {
+					"oci": { "$ref": "./providers/oci.schema.json" },
+					"additionalProperties": false
+				},
+				"required": ["oci"]
+			}
+		}
+	]
+}

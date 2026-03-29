@@ -1,0 +1,18 @@
+{
+	"oci.freeTierOnly": "oci_free_tier_only",
+	"oci.tenancyOcid": "tenancy_ocid",
+	"oci.userOcid": "user_ocid",
+	"oci.privateSshKey": "ssh_private_key_path",
+	"oci.fingerprint": "fingerprint",
+	"oci.region": "region",
+	"oci.alertEmailAddresses": "alert_email_addresses",
+	"defaultSshKeys": "public_ssh_key_paths",
+	"oci.availabilityDomainNumber": "availability_domain_number",
+	"identifier": "identifier",
+	"oci.image": "instance_image",
+	"oci.shape": "instance_shape",
+	"oci.ocpus": "instance_ocpus",
+	"oci.ram": "instance_ram",
+	"oci.volumeSize": "instance_volume_size",
+	"minecraft.additionalPorts": "ingress_ports"
+}

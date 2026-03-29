@@ -1,0 +1,33 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Run Flask",
+			"type": "shell",
+			"command": "python",
+			"args": ["-m", "app.main"],
+			"isBackground": true,
+			"options": {
+				"cwd": "${workspaceFolder}/backend/src"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Run npm Development Server",
+			"type": "shell",
+			"command": "npm",
+			"args": ["run", "dev"],
+			"isBackground": true,
+			"options": {
+				"cwd": "${workspaceFolder}/frontend"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Run Dev Environment",
+			"detail": "Starts both the backend (Python) and frontend (npm)",
+			"dependsOn": ["Run Flask", "Run npm Development Server"],
+			"problemMatcher": []
+		}
+	]
+}

@@ -1,0 +1,45 @@
+- name: install sudo package
+  become: true
+  ansible.builtin.apt:
+    cache_valid_time: 3600
+    name: sudo
+    state: present
+
+- name: create "sudoers.d" directory
+  become: true
+  ansible.builtin.file:
+    path: /etc/sudoers.d
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: restrict sudo usage to a defined group
+  become: true
+  ansible.builtin.copy:
+    dest: /etc/sudoers.d/10-{{ sudo_group }}
+    content: "{{ sudo_group }} ALL=(ALL:ALL) ALL"
+    owner: root
+    group: root
+    mode: "0440"
+
+- name: enable passwordless sudo for the ansible user
+  become: true
+  ansible.builtin.copy:
+    dest: /etc/sudoers.d/20-{{ ansible_user_name }}
+    content: "{{ ansible_user_name }} ALL=(ALL) NOPASSWD: ALL"
+    owner: root
+    group: root
+    mode: "0440"
+
+- name: restrict su usage to a defined group
+  become: true
+  ansible.builtin.shell: |
+    sudo dpkg-statoverride --update --add root {{ su_group }} 4750 /bin/su
+  register: sustd
+  changed_when:
+    - sustd.rc == 0
+    - '"exist" not in sustd.stderr' # only works for english OS version
+  failed_when:
+    - sustd.rc != 0
+    - '"exist" not in sustd.stderr' # only works for english OS version

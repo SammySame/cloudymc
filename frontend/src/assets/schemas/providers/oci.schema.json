@@ -1,0 +1,94 @@
+{
+	"$id": "provider.oci",
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"type": "object",
+	"properties": {
+		"freeTierOnly": {
+			"type": "boolean",
+			"default": true
+		},
+		"availabilityDomainNumber": {
+			"type": "number",
+			"minimum": 1,
+			"maximum": 3,
+			"default": 1
+		},
+		"tenancyOcid": {
+			"type": "string",
+			"pattern": "^ocid1\\.tenancy\\.oc1\\..+"
+		},
+		"userOcid": {
+			"type": "string",
+			"pattern": "^ocid1\\.user\\.oc1\\..+"
+		},
+		"privateSshKey": {
+			"type": "string",
+			"minLength": 1
+		},
+		"fingerprint": {
+			"type": "string",
+			"pattern": "^(?:[^:]{2}:)+[^:]{2}$"
+		},
+		"region": {
+			"type": "string",
+			"pattern": "^[a-z]+-[a-z]+-[0-9]$"
+		},
+		"image": {
+			"type": "string",
+			"pattern": "^ocid1\\.image\\.oc1\\..+"
+		},
+		"shape": {
+			"type": "string",
+			"default": "VM.Standard.A1.Flex",
+			"pattern": "^(?:VM|DVH|BM)\\..+"
+		},
+		"ocpus": {
+			"type": "number",
+			"minimum": 1,
+			"default": 4
+		},
+		"ram": {
+			"type": "number",
+			"minimum": 1,
+			"default": 24
+		},
+		"volumeSize": {
+			"type": "number",
+			"minimum": 1,
+			"default": 200
+		},
+		"alertEmailAddresses": {
+			"type": "array",
+			"items": { "type": "string" },
+			"uniqueItems": true
+		}
+	},
+	"required": [
+		"freeTierOnly",
+		"availabilityDomainNumber",
+		"tenancyOcid",
+		"userOcid",
+		"privateSshKey",
+		"fingerprint",
+		"region",
+		"image",
+		"shape",
+		"ocpus",
+		"ram",
+		"volumeSize"
+	],
+	"if": {
+		"properties": {
+			"freeTierOnly": { "const": true }
+		},
+		"required": ["freeTierOnly"]
+	},
+	"then": {
+		"properties": {
+			"shape": { "pattern": "^VM\\.Standard\\.A1\\.Flex$" },
+			"ocpus": { "maximum": 4 },
+			"ram": { "maximum": 24 },
+			"volumeSize": { "maximum": 200 }
+		}
+	}
+}

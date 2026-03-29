@@ -1,0 +1,88 @@
+- name: create and configure users and groups
+  ansible.builtin.import_tasks: users.yml
+
+- name: create minecraft server root directory
+  become: true
+  ansible.builtin.file:
+    name: "{{ mc_server_root_dir }}"
+    state: directory
+    owner: "{{ mc_admin_user }}"
+    group: "{{ mc_admin_group }}"
+    mode: "0775"
+
+- name: create minecraft server data directory
+  become: true
+  ansible.builtin.file:
+    name: "{{ mc_server_data_dir }}"
+    state: directory
+    owner: "{{ mc_runner_user }}"
+    group: "{{ mc_admin_group }}"
+    mode: "0775"
+
+- name: mount minecraft server data directory into minecraft admin home directory
+  become: true
+  ansible.posix.mount:
+    path: /home/{{ mc_admin_user }}/minecraft-server
+    src: "{{ mc_server_data_dir }}"
+    opts: bind
+    fstype: none
+    state: mounted
+
+- name: check if custom docker compose file has been defined
+  run_once: true
+  delegate_to: localhost
+  ansible.builtin.stat:
+    path: "{{ mc_server_compose_file }}"
+    get_checksum: false
+    get_mime: false
+    get_attributes: false
+  register: custom_compose_stat
+
+- name: import custom docker compose file
+  become: true
+  ansible.builtin.copy:
+    src: "{{ mc_server_compose_file }}"
+    dest: "{{ mc_server_root_dir }}/compose.yml"
+    owner: root
+    group: root
+    mode: "0664"
+  when:
+    - custom_compose_stat.stat.exists
+    - custom_compose_stat.stat.isreg
+    - custom_compose_stat.stat.readable
+
+- name: create docker compose file
+  become: true
+  ansible.builtin.template:
+    src: compose.yml.j2
+    dest: "{{ mc_server_root_dir }}/compose.yml"
+    owner: root
+    group: root
+    mode: "0664"
+  when: not custom_compose_stat.stat.exists
+
+- name: set sysctl settings to prevent OOM kill
+  become: true
+  ansible.posix.sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    reload: true
+    state: present
+  loop:
+    - { name: vm.swappiness, value: 10 }
+    - { name: vm.overcommit_memory, value: 1 }
+    - { name: vm.overcommit_ratio, value: 90 }
+
+- name: check if EULA has been accepted
+  ansible.builtin.assert:
+    fail_msg: "Minecraft EULA has not been accepted. The server cannot be started."
+    success_msg: ""
+    that: "mc_server_eula_accepted|string|lower == 'true'"
+
+- name: create and start minecraft server
+  become: true
+  community.docker.docker_compose_v2:
+    project_src: "{{ mc_server_root_dir }}"
+    build: never
+    state: present
+  register: docker_output

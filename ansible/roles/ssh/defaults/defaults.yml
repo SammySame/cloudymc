@@ -1,0 +1,2 @@
+sftp_group: sftpusers
+ssh_group: sshusers

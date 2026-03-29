@@ -1,0 +1,148 @@
+{
+	"$id": "minecraft",
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"title": "Minecraft Server Configuration",
+	"type": "object",
+	"properties": {
+		"serverPort": {
+			"type": "number",
+			"minimum": 1024,
+			"maximum": 65535,
+			"default": 25565
+		},
+		"additionalPorts": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"properties": {
+					"number": {
+						"type": "number",
+						"minimum": 1024,
+						"maximum": 65535
+					},
+					"protocol": {
+						"type": "string",
+						"enum": ["TCP", "UDP"]
+					}
+				},
+				"required": ["number", "protocol"]
+			}
+		},
+		"eulaAccepted": {
+			"type": "boolean",
+			"default": false
+		},
+		"onlineMode": {
+			"type": "boolean",
+			"default": true
+		},
+		"serverName": {
+			"type": "string",
+			"pattern": "^[^;]+$",
+			"minLenght": 1,
+			"default": "CloudyMC"
+		},
+		"motd": {
+			"type": "string",
+			"default": "Server created with \u00A76CloudyMC\u00A7r\n\u00A79\u00A7nhttps://repo.link.goes.here.xd"
+		},
+		"maxPlayers": {
+			"type": "number",
+			"minimum": 1,
+			"default": 20
+		},
+		"gameMode": {
+			"type": "string",
+			"enum": ["survival", "creative", "adventure", "spectator"],
+			"default": "survival"
+		},
+		"version": {
+			"type": "string",
+			"default": "LATEST"
+		},
+		"difficulty": {
+			"type": "string",
+			"enum": ["peaceful", "easy", "normal", "hard"],
+			"default": "normal"
+		},
+		"hardcore": {
+			"type": "boolean",
+			"default": false
+		},
+		"pvp": {
+			"type": "boolean",
+			"default": true
+		},
+		"allowFlight": {
+			"type": "boolean",
+			"default": false
+		},
+		"levelType": {
+			"type": "string",
+			"enum": ["normal", "flat", "large_biomes", "amplified", "single_biome_surface"],
+			"default": "normal"
+		},
+		"seed": {
+			"type": "string"
+		},
+		"viewDistance": {
+			"type": "number",
+			"minimum": 3,
+			"maximum": 32,
+			"default": 8
+		},
+		"simulationDistance": {
+			"type": "number",
+			"minimum": 3,
+			"maximum": 32,
+			"default": 6
+		},
+		"spawnProtection": {
+			"type": "number",
+			"default": 16
+		},
+		"whitelist": {
+			"type": "array",
+			"items": { "type": "string" }
+		},
+		"ops": {
+			"type": "array",
+			"items": { "type": "string" }
+		},
+		"commands": {
+			"type": "object",
+			"properties": {
+				"onServerStartup": {
+					"type": "array",
+					"items": { "type": "string" }
+				},
+				"onPlayerConnect": {
+					"type": "array",
+					"items": { "type": "string" }
+				},
+				"onPlayerDisconnect": {
+					"type": "array",
+					"items": { "type": "string" }
+				}
+			}
+		}
+	},
+	"required": [
+		"serverPort",
+		"additionalPorts",
+		"onlineMode",
+		"eulaAccepted",
+		"serverName",
+		"maxPlayers",
+		"gameMode",
+		"version",
+		"difficulty",
+		"hardcore",
+		"pvp",
+		"allowFlight",
+		"levelType",
+		"viewDistance",
+		"simulationDistance",
+		"spawnProtection"
+	]
+}

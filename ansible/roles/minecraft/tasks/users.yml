@@ -1,0 +1,57 @@
+- name: create minecraft admin group
+  become: true
+  ansible.builtin.group:
+    name: "{{ mc_admin_group }}"
+    gid: "{{ mc_admin_gid }}"
+    state: present
+
+- name: create minecraft docker runner user
+  become: true
+  ansible.builtin.user:
+    name: "{{ mc_runner_user }}"
+    group: "{{ mc_admin_group }}"
+    uid: "{{ mc_runner_uid }}"
+    shell: /bin/bash
+    createhome: false
+    state: present
+  register: mc_user_output
+
+- name: create minecraft admin user
+  become: true
+  ansible.builtin.user:
+    name: "{{ mc_admin_user }}"
+    group: "{{ mc_admin_group }}"
+    groups: "{{ sftp_group }}"
+    uid: "{{ mc_admin_uid }}"
+    shell: /sbin/nologin
+    create_home: true
+    state: present
+
+- name: change minecraft admin home directory permissions
+  become: true
+  ansible.builtin.file:
+    path: /home/{{ mc_admin_user }}
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: remove unneeded files from the minecraft admin home directory
+  become: true
+  ansible.builtin.file:
+    path: /home/{{ mc_admin_user }}/{{ item }}
+    state: absent
+  loop:
+    - .bashrc
+    - .bash_logout
+    - .profile
+
+- name: supply authorized key for the minecraft admin user
+  become: true
+  ansible.posix.authorized_key:
+    user: "{{ mc_admin_user }}"
+    key: "{{ lookup('ansible.builtin.file', item) }}"
+    path: /etc/ssh/authorized_keys/{{ mc_admin_user }}
+    exclusive: true
+    state: present
+  loop: mc_sftp_public_key_files

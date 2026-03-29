@@ -1,0 +1,82 @@
+---
+- name: install required packages for docker sdk
+  become: true
+  ansible.builtin.apt:
+    cache_valid_time: 3600
+    name: python3-pip
+    state: present
+
+- name: install docker sdk for python library
+  ansible.builtin.pip:
+    name: docker
+    break_system_packages: true
+    state: present
+
+- name: install required packages for docker installation
+  become: true
+  ansible.builtin.apt:
+    cache_valid_time: 3600
+    name:
+      - software-properties-common
+      - apt-transport-https
+      - ca-certificates
+      - curl
+    state: present
+
+- name: create gpg key directory
+  become: true
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: download docker gpg key
+  become: true
+  ansible.builtin.get_url:
+    url: https://download.docker.com/linux/{{ ansible_facts['distribution'] | lower }}/gpg
+    dest: /etc/apt/keyrings/docker.asc
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: add docker repository into apt sources
+  become: true
+  ansible.builtin.apt_repository:
+    filename: docker
+    repo: |
+      deb [arch={{ deb_architecture[ansible_facts['architecture']] }}
+      signed-by=/etc/apt/keyrings/docker.asc]
+      https://download.docker.com/linux/{{ ansible_facts['distribution'] | lower }}
+      {{ ansible_facts['distribution_release'] }}
+      stable
+    state: present
+
+- name: install docker and docker compose
+  become: true
+  ansible.builtin.apt:
+    update_cache: true
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+    state: present
+
+- name: create docker daemon config file
+  become: true
+  ansible.builtin.copy:
+    dest: /etc/docker/daemon.json
+    content: "{{ lookup('ansible.builtin.file', 'daemon.json') }}"
+    mode: "0644"
+    owner: root
+    group: root
+  notify: restart docker service
+
+- name: enable docker service
+  become: true
+  ansible.builtin.service:
+    name: docker
+    enabled: true

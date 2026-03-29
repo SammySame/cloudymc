@@ -1,0 +1,80 @@
+services:
+  minecraft-server:
+    image: ghcr.io/itzg/minecraft-server:{{ mc_image_tag }}
+    container_name: minecraft-server
+    restart: unless-stopped
+    tty: true
+    stdin_open: true
+    stop_grace_period: 60s
+    ports:
+      - {{ mc_port }}:25565
+    {% for port in mc_additional_ports %}
+      - {{port.number}}:{{port.number}}/{{port.protocol}}
+    {% endfor %}
+    environment:
+      TYPE: VANILLA
+      EULA: {{ mc_eula_accepted }}
+      ONLINE_MODE: {{ mc_online_mode }}
+      SERVER_NAME: {{ mc_name }}
+      MOTD: {{ mc_motd }}
+      ICON: {{ mc_icon }}
+      OVERRIDE_ICON: {{ mc_override_icon }}
+      MAX_PLAYERS: {{ mc_max_players }}
+      MODE: {{ mc_mode }}
+      VERSION: {{ mc_version }}
+      DIFFICULTY: {{ mc_difficulty }}
+      HARDCORE: {{ mc_hardcore }}
+      PVP: {{ mc_pvp }}
+      LEVEL_TYPE: {{ mc_level_type }}
+      SEED: {{ mc_seed }}
+      VIEW_DISTANCE: {{ mc_view_distance }}
+      SIMULATION_DISTANCE: {{ mc_simulation_distance }}
+      SPAWN_PROTECTION: {{ mc_spawn_protection }}
+      ALLOW_FLIGHT: {{ mc_allow_flight }}
+      {% if mc_whitelist_users %}
+      ENABLE_WHITELIST: true
+      WHITELIST: |-
+        {% for user in mc_whitelist_users %}
+        {{ user }}
+        {% endfor %}
+      {% else %}
+      ENABLE_WHITELIST: false
+      {% endif %}
+      {% if mc_ops %}
+      OPS: |-
+        {% for op_user in mc_ops %}
+        {{ op_user }}
+        {% endfor %}
+      {% endif %}
+      {% if mc_commands_startup %}
+      RCON_CMDS_STARTUP: |-
+        {% for command in mc_commands_startup %}
+        {{ command }}
+        {% endfor %}
+      {% endif %}
+      {% if mc_commands_connect %}
+      RCON_CMDS_ON_CONNECT: |-
+        {% for command in mc_commands_connect %}
+        {{ command }}
+        {% endfor %}
+      {% endif %}
+      {% if mc_commands_disconnect %}
+      RCON_CMDS_ON_DISCONNECT: |-
+        {% for command in mc_commands_disconnect %}
+        {{ command }}
+        {% endfor %}
+      {% endif %}
+      MEMORY: {{ mc_memory_mb }}M
+      SNOOPER_ENABLED: false
+      ENABLE_RCON: true
+      STOP_SERVER_ANNOUNCE_DELAY: 60
+      ROLLING_LOG_MAX_FILES: 100
+      USE_MEOWICE_FLAGS: true
+      USE_MEOWICE_GRAALVM_FLAGS: false
+      UID: {{ mc_user_output.uid }}
+      GID: {{ mc_user_output.group }}
+      TZ: {{ system_timezone }}
+    volumes:
+      - ./data:/data
+    security_opt:
+      - no-new-privileges:true

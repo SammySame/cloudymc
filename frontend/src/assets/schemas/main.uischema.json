@@ -1,0 +1,300 @@
+{
+	"ui:title": "General",
+	"ui:classNames": "custom-root-object",
+	"ui:globalOptions": {
+		"enableMarkdownInHelp": true,
+		"enableMarkdownInDescription": true
+	},
+	"ui:field": "LayoutGridField",
+	"ui:layoutGrid": {
+		"ui:row": {
+			"children": [
+				{
+					"ui:col": {
+						"md": 12,
+						"children": [
+							{
+								"ui:row": {
+									"children": [
+										{ "ui:col": { "md": 6, "children": ["identifier"] } },
+										{ "ui:col": { "md": 6, "children": ["timeZone"] } },
+										{ "ui:col": { "md": 12, "children": ["defaultSshKeys"] } },
+										{ "ui:col": { "md": 12, "children": ["sftpSshKeys"] } },
+										{ "ui:col": { "md": 12, "children": ["ansibleSshKey"] } }
+									]
+								}
+							}
+						]
+					}
+				},
+				{
+					"ui:col": {
+						"md": 12,
+						"children": [
+							{
+								"ui:row": {
+									"children": [
+										{ "ui:col": { "md": 12, "children": ["minecraft"] } },
+										{ "ui:col": { "md": 12, "children": ["minecraft.serverName"] } },
+										{ "ui:col": { "md": 12, "children": ["minecraft.motd"] } },
+										{ "ui:col": { "md": 6, "children": ["minecraft.onlineMode"] } },
+										{ "ui:col": { "md": 6, "children": ["minecraft.eulaAccepted"] } },
+										{ "ui:col": { "md": 6, "children": ["minecraft.serverPort"] } },
+										{ "ui:col": { "md": 6, "children": ["minecraft.maxPlayers"] } },
+										{ "ui:col": { "md": 6, "children": ["minecraft.version"] } },
+										{ "ui:col": { "md": 6, "children": ["minecraft.levelType"] } },
+										{ "ui:col": { "md": 6, "children": ["minecraft.gameMode"] } },
+										{ "ui:col": { "md": 6, "children": ["minecraft.difficulty"] } },
+										{ "ui:col": { "md": 6, "children": ["minecraft.viewDistance"] } },
+										{ "ui:col": { "md": 6, "children": ["minecraft.simulationDistance"] } },
+										{ "ui:col": { "md": 6, "children": ["minecraft.spawnProtection"] } },
+										{ "ui:col": { "md": 6, "children": ["minecraft.seed"] } },
+										{ "ui:col": { "md": 6, "children": ["minecraft.hardcore"] } },
+										{ "ui:col": { "md": 6, "children": ["minecraft.pvp"] } },
+										{ "ui:col": { "md": 12, "children": ["minecraft.allowFlight"] } },
+										{ "ui:col": { "md": 12, "children": ["minecraft.whitelist"] } },
+										{ "ui:col": { "md": 12, "children": ["minecraft.ops"] } },
+										{ "ui:col": { "md": 12, "children": ["minecraft.additionalPorts"] } },
+										{ "ui:col": { "md": 12, "children": ["minecraft.commands"] } }
+									]
+								}
+							}
+						]
+					}
+				},
+				{
+					"ui:col": {
+						"md": 12,
+						"children": [
+							{
+								"ui:row": {
+									"children": [
+										{ "ui:col": { "md": 12, "children": ["oci"] } },
+										{ "ui:col": { "md": 12, "children": ["providerType"] } },
+										{ "ui:col": { "md": 12, "children": ["oci.image"] } },
+										{ "ui:col": { "md": 12, "children": ["oci.shape"] } },
+										{ "ui:col": { "md": 4, "children": ["oci.ocpus"] } },
+										{ "ui:col": { "md": 4, "children": ["oci.ram"] } },
+										{ "ui:col": { "md": 4, "children": ["oci.volumeSize"] } },
+										{ "ui:col": { "md": 12, "children": ["oci.freeTierOnly"] } },
+										{ "ui:col": { "md": 12, "children": ["oci.tenancyOcid"] } },
+										{ "ui:col": { "md": 12, "children": ["oci.userOcid"] } },
+										{ "ui:col": { "md": 6, "children": ["oci.privateSshKey"] } },
+										{ "ui:col": { "md": 6, "children": ["oci.fingerprint"] } },
+										{ "ui:col": { "md": 6, "children": ["oci.region"] } },
+										{ "ui:col": { "md": 6, "children": ["oci.availabilityDomainNumber"] } },
+										{ "ui:col": { "md": 12, "children": ["oci.alertEmailAddresses"] } }
+									]
+								}
+							}
+						]
+					}
+				}
+			]
+		}
+	},
+	"identifier": {
+		"ui:autofocus": true,
+		"ui:title": "Identifier",
+		"ui:help": "Used for naming created cloud resources and other"
+	},
+	"timeZone": {
+		"ui:title": "Time Zone",
+		"ui:help": "Used by the cloud instance. See [List of Time Zones](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)"
+	},
+	"defaultSshKeys": {
+		"ui:title": "Default User SSH Keys",
+		"ui:description": "Default cloud instance operating system user. At least one key required",
+		"items": { "ui:options": { "label": false }, "ui:placeholder": "my-default-ssh-key.pub" }
+	},
+	"sftpSshKeys": {
+		"ui:title": "SFTP User SSH Keys",
+		"ui:description": "Cloud instance user that can only access and modify Minecraft server files. At least one key required",
+		"ui:placeholder": "my-sftp-ssh-key.pub",
+		"items": { "ui:options": { "label": false }, "ui:placeholder": "my-sftp-ssh-key.pub" }
+	},
+	"ansibleSshKey": {
+		"ui:title": "Automation User SSH Key",
+		"ui:description": "Cloud instance user that will automatically configure the instance",
+		"ui:placeholder": "my-automation-ssh-key.pub",
+		"items": { "ui:options": { "label": false } }
+	},
+	"providerType": {
+		"ui:title": "Provider Type",
+		"ui:description": "Changing provider settings after cloud instance creation can result in instance data loss. Make sure to backup important data outisde the instance, before changing the values bellow",
+		"ui:enumNames": ["Oracle Cloud Infrastructure (OCI)"]
+	},
+	"minecraft": {
+		"ui:title": "Minecraft Server",
+		"ui:classNames": "custom-root-object",
+		"ui:field": "LayoutHeaderField",
+		"serverPort": {
+			"ui:title": "Server Port"
+		},
+		"additionalPorts": {
+			"ui:title": "Additional Ports",
+			"items": {
+				"number": {
+					"ui:title": "Number"
+				},
+				"protocol": {
+					"ui:title": "Protocol"
+				},
+				"ui:options": {
+					"label": false
+				},
+				"ui:field": "LayoutGridField",
+				"ui:layoutGrid": {
+					"ui:row": {
+						"children": [
+							{ "ui:col": { "md": 6, "children": ["number"] } },
+							{ "ui:col": { "md": 6, "children": ["protocol"] } }
+						]
+					}
+				}
+			}
+		},
+		"eulaAccepted": {
+			"ui:title": "EULA Accepted",
+			"ui:help": "Required to host a Minecraft Server. See [EULA](https://www.minecraft.net/en-us/eula)"
+		},
+		"onlineMode": {
+			"ui:title": "Online Mode"
+		},
+		"serverName": {
+			"ui:title": "Server Name"
+		},
+		"motd": {
+			"ui:title": "MOTD",
+			"ui:widget": "textarea"
+		},
+		"maxPlayers": {
+			"ui:title": "Max Players"
+		},
+		"gameMode": {
+			"ui:title": "Game Mode",
+			"ui:enumNames": ["Survival", "Creative", "Adventure", "Spectator"]
+		},
+		"version": {
+			"ui:title": "Version",
+			"ui:help": "Can use LATEST or SNAPSHOT for newest version"
+		},
+		"difficulty": {
+			"ui:title": "Difficulty",
+			"ui:enumNames": ["Peaceful", "Easy", "Medium", "Hard"]
+		},
+		"hardcore": {
+			"ui:title": "Hardcore"
+		},
+		"pvp": {
+			"ui:title": "PVP"
+		},
+		"allowFlight": {
+			"ui:title": "Allow Flight"
+		},
+		"levelType": {
+			"ui:title": "Level Type",
+			"ui:enumNames": ["Normal", "Flat", "Large Biomes", "Amplified", "Single Biome Surface"]
+		},
+		"seed": {
+			"ui:title": "Seed",
+			"ui:help": "Leave empty for random seed"
+		},
+		"viewDistance": {
+			"ui:title": "View Distance"
+		},
+		"simulationDistance": {
+			"ui:title": "Simulation Distance"
+		},
+		"spawnProtection": {
+			"ui:title": "Spawn Protection"
+		},
+		"whitelist": {
+			"ui:title": "Whitelist",
+			"ui:description": "Leave empty for disabled whitelist",
+			"items": { "ui:options": { "label": false } }
+		},
+		"ops": {
+			"ui:title": "OPs",
+			"items": { "ui:options": { "label": false } }
+		},
+		"commands": {
+			"ui:title": "Commands",
+			"ui:description": "Commands (without initial slash) to be run on certain events",
+			"ui:classNames": "custom-child-object",
+			"onServerStartup": {
+				"ui:title": "On Server Startup",
+				"items": { "ui:options": { "label": false } }
+			},
+			"onPlayerConnect": {
+				"ui:title": "On Player Connect",
+				"items": { "ui:options": { "label": false } }
+			},
+			"onPlayerDisconnect": {
+				"ui:title": "On Player Disconnect",
+				"items": { "ui:options": { "label": false } }
+			}
+		}
+	},
+	"oci": {
+		"ui:title": "Oracle Cloud Infrastructure (OCI)",
+		"ui:classNames": "custom-root-object",
+		"ui:field": "LayoutHeaderField",
+		"freeTierOnly": {
+			"ui:title": "Free Tier Only",
+			"ui:help": "Ensure that the configuration stays within the OCI free tier limits. See [Oracle Cloud Free Tier](https://www.oracle.com/cloud/free/)"
+		},
+		"availabilityDomainNumber": {
+			"ui:title": "Availability Domain Number",
+			"ui:help": "See [Regions](https://docs.oracle.com/en-us/iaas/Content/General/Concepts/regions.htm)"
+		},
+		"tenancyOcid": {
+			"ui:title": "Tenancy OCID",
+			"ui:help": "See [Tenancy's OCID](https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm#five)",
+			"ui:widget": "password"
+		},
+		"userOcid": {
+			"ui:title": "User OCID",
+			"ui:help": "See [User's OCID](https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm#five)",
+			"ui:widget": "password"
+		},
+		"privateSshKey": {
+			"ui:title": "Private SSH Key",
+			"ui:help": "See [Generate an API Signing Key](https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm#two)",
+			"ui:placeholder": "my-ssh-key-file.pem"
+		},
+		"fingerprint": {
+			"ui:title": "Fingerprint",
+			"ui:help": "See [How to Get the Key's Fingerprint](https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm#four)"
+		},
+		"region": {
+			"ui:title": "Region",
+			"ui:help": "See [Regions and Availability Domains](https://docs.oracle.com/en-us/iaas/Content/General/Concepts/regions.htm)"
+		},
+		"image": {
+			"ui:title": "Image",
+			"ui:help": "See [Ubuntu 24.04](https://docs.oracle.com/en-us/iaas/images/ubuntu-2404/canonical-ubuntu-24-04-minimal-aarch64-2025-10-31-0.htm)"
+		},
+		"shape": {
+			"ui:title": "Shape",
+			"ui:help": "See [Flexible Shapes](https://docs.oracle.com/en-us/iaas/Content/Compute/References/computeshapes.htm#flexible)"
+		},
+		"ocpus": {
+			"ui:title": "OCPUs",
+			"ui:help": "CPU Cores"
+		},
+		"ram": {
+			"ui:title": "RAM",
+			"ui:help": "In Gigabytes"
+		},
+		"volumeSize": {
+			"ui:title": "Volume Size",
+			"ui:help": "In Gigabytes"
+		},
+		"alertEmailAddresses": {
+			"ui:title": "Alert Email Addresses",
+			"ui:help": "Email addresses that will get notified if the OCI free tier limit is exceeded",
+			"items": { "ui:options": { "label": false } }
+		}
+	}
+}
