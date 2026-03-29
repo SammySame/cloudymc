@@ -3,8 +3,9 @@ import logging
 import os.path
 import subprocess
 
-from app import MODULE_ROOT_DIR, PROJECT_ROOT_DIR, app
 from flask import Response, jsonify, request, stream_with_context
+
+from app import MODULE_ROOT_DIR, PROJECT_ROOT_DIR, app
 
 from .utils.json_helpers import flatten_json, load_json, map_json_keys, save_json
 
@@ -38,13 +39,15 @@ def load_config():
 
 @app.route('/api/forms/submit', methods=['POST'])
 def apply_config():
-	config = request.get_json(force=True)
-	if config is None:
+	body: tuple[dict, bool] = request.get_json(force=True)
+	if body is None:
 		return jsonify({'error': 'Invalid or missing JSON body'}), 400
-	return Response(stream_with_context(run_pipeline(config)), mimetype='text/event-stream')
+	config = body[0]
+	apply = body[1]
+	return Response(stream_with_context(run_pipeline(config, apply)), mimetype='text/event-stream')
 
 
-def run_pipeline(config: dict):
+def run_pipeline(config: dict, apply=False):
 	try:
 		tf_vars_map = load_json(os.path.join(MODULE_ROOT_DIR, 'data', 'terraform_oci_map.json'))
 	except Exception as e:
@@ -62,7 +65,7 @@ def run_pipeline(config: dict):
 
 	yield f'data: {json.dumps({"debug": tf_vars})}\n\n'
 
-	for event in run_terraform(os.path.join(PROJECT_ROOT_DIR, 'terraform')):
+	for event in run_terraform(os.path.join(PROJECT_ROOT_DIR, 'terraform'), apply):
 		yield event
 		data = json.loads(event.replace('data: ', ''))
 		if data.get('done') and data.get('returnCode') == 0:

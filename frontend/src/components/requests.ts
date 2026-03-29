@@ -1,11 +1,11 @@
 /* global RequestInit */
 /* global RequestInfo */
 
-async function submitForm(formData: any) {
+async function submitForm(formData: any, apply = false) {
 	const response = await getResponse('/api/forms/submit', {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify(formData),
+		body: JSON.stringify([formData, apply]),
 	});
 
 	const reader = response!.body!.getReader();
