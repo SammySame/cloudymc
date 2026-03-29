@@ -1,4 +1,3 @@
----
 - name: install required packages for docker sdk
   become: true
   ansible.builtin.apt:
