@@ -41,9 +41,6 @@
 	"[yaml]": {
 		"editor.defaultFormatter": "redhat.vscode-yaml"
 	},
-	"[jinja]": {
-		"editor.defaultFormatter": "samuelcolvin.jinjahtml"
-	},
 	"[terraform]": {
 		"editor.defaultFormatter": "hashicorp.terraform",
 		"editor.formatOnSave": true,
@@ -61,6 +58,6 @@
 		}
 	],
 	"files.associations": {
-		"ansible/roles/*/tasks/*.yml": "ansible"
+		"**/ansible/roles/**/*.yml": "ansible"
 	}
 }
