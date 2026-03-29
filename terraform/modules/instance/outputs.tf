@@ -22,4 +22,5 @@ output "boot_volume_name" {
 output "public_ip" {
   description = "Instance public IP."
   value       = oci_core_instance.this.public_ip
+  sensitive   = true
 }
