@@ -18,7 +18,7 @@ variable "user_ocid" {
   sensitive   = true
 }
 
-variable "ssh_private_key_path" {
+variable "private_ssh_key_path" {
   description = "Path to the private SSH key used for OCI authentication."
   type        = string
   nullable    = false

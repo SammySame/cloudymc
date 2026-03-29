@@ -2,7 +2,7 @@
 	"oci.freeTierOnly": "oci_free_tier_only",
 	"oci.tenancyOcid": "tenancy_ocid",
 	"oci.userOcid": "user_ocid",
-	"oci.privateSshKey": "ssh_private_key_path",
+	"oci.privateSshKey": "private_ssh_key_path",
 	"oci.fingerprint": "fingerprint",
 	"oci.region": "region",
 	"oci.alertEmailAddresses": "alert_email_addresses",
