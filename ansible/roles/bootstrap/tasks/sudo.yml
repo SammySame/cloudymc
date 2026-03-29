@@ -17,8 +17,8 @@
 - name: restrict sudo usage to a defined group
   become: true
   ansible.builtin.copy:
-    dest: /etc/sudoers.d/10-{{ sudo_group }}
-    content: "{{ sudo_group }} ALL=(ALL:ALL) ALL"
+    dest: /etc/sudoers.d/10-{{ cloudymc_sudo_group }}
+    content: "{{ cloudymc_sudo_group }} ALL=(ALL:ALL) ALL"
     owner: root
     group: root
     mode: "0440"
@@ -26,8 +26,8 @@
 - name: enable passwordless sudo for the ansible user
   become: true
   ansible.builtin.copy:
-    dest: /etc/sudoers.d/20-{{ ansible_user_name }}
-    content: "{{ ansible_user_name }} ALL=(ALL) NOPASSWD: ALL"
+    dest: /etc/sudoers.d/20-{{ cloudymc_ansible_username }}
+    content: "{{ cloudymc_ansible_username }} ALL=(ALL) NOPASSWD: ALL"
     owner: root
     group: root
     mode: "0440"
@@ -35,7 +35,7 @@
 - name: restrict su usage to a defined group
   become: true
   ansible.builtin.shell: |
-    sudo dpkg-statoverride --update --add root {{ su_group }} 4750 /bin/su
+    sudo dpkg-statoverride --update --add root {{ cloudymc_su_group }} 4750 /bin/su
   register: sustd
   changed_when:
     - sustd.rc == 0

@@ -1,9 +1,9 @@
-ansible_ssh_public_key_file:
-system_timezone: Etc/UTC
+cloudymc_ansible_ssh_public_key_file:
+cloudymc_system_timezone: Etc/UTC
 
-ansible_user_name: ansible
-ansible_group: ansible
-sudo_group: sudousers
-su_group: suusers
-sftp_group: sftpusers
-ssh_group: sshusers
+cloudymc_ansible_username: ansible
+cloudymc_ansible_group: ansible
+cloudymc_sudo_group: sudousers
+cloudymc_su_group: suusers
+cloudymc_sftp_group: sftpusers
+cloudymc_ssh_group: sshusers

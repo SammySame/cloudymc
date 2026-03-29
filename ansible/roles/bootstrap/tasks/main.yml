@@ -1,7 +1,7 @@
 - name: configure system timezone
   become: true
   community.general.timezone:
-    name: "{{ system_timezone }}"
+    name: "{{ cloudymc_system_timezone }}"
 
 - name: create users and groups
   ansible.builtin.import_tasks: users.yml
