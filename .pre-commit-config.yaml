@@ -52,7 +52,7 @@ repos:
       - id: terraform-validate
         name: Terraform Validate
         language: system
-        entry: terraform -chdir=terraform/ validate
+        entry: terraform -chdir=terraform/ validate -no-color
         types: [terraform]
         files: terraform/
         pass_filenames: false
