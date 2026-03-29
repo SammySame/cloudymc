@@ -1,42 +1,42 @@
-mc_image_tag: stable-java25
-mc_port: 25565
-mc_additional_ports: []
-mc_eula_accepted: false
-mc_online_mode: true
-mc_name: Minecraft Server
-mc_motd: "A vanilla server running on {{ mc_version }}"
-mc_icon:
-mc_override_icon: false
-mc_max_players: 20
-mc_mode: survival
-mc_version: LATEST
-mc_difficulty: normal
-mc_hardcore: false
-mc_pvp: true
-mc_level_type: normal
-mc_seed:
-mc_view_distance: 8
-mc_simulation_distance: 6
-mc_spawn_protection: 16
-mc_allow_flight: false
-mc_whitelist_users: []
-mc_ops: []
-mc_commands_startup: ["say Hello World!"]
-mc_commands_connect: []
-mc_commands_disconnect: []
+cloudymc_mc_image_tag: stable-java25
+cloudymc_mc_port: 25565
+cloudymc_mc_additional_ports: []
+cloudymc_mc_eula_accepted: false
+cloudymc_mc_online_mode: true
+cloudymc_mc_name: Minecraft Server
+cloudymc_mc_motd: "A vanilla server running on {{ cloudymc_mc_version }}"
+cloudymc_mc_icon:
+cloudymc_mc_override_icon: false
+cloudymc_mc_max_players: 20
+cloudymc_mc_mode: survival
+cloudymc_mc_version: LATEST
+cloudymc_mc_difficulty: normal
+cloudymc_mc_hardcore: false
+cloudymc_mc_pvp: true
+cloudymc_mc_level_type: normal
+cloudymc_mc_seed:
+cloudymc_mc_view_distance: 8
+cloudymc_mc_simulation_distance: 6
+cloudymc_mc_spawn_protection: 16
+cloudymc_mc_allow_flight: false
+cloudymc_mc_whitelist_users: []
+cloudymc_mc_ops: []
+cloudymc_mc_commands_startup: ["say Hello World!"]
+cloudymc_mc_commands_connect: []
+cloudymc_mc_commands_disconnect: []
 
-mc_compose_file:
-mc_sftp_public_key_files: []
-mc_root_dir: /opt/minecraft-server
-mc_data_dir: "{{ mc_root_dir }}/data"
-mc_memory_mb: "{{ ansible_facts['memtotal_mb'] - 2048 }}"
+cloudymc_mc_compose_file:
+cloudymc_mc_sftp_public_key_files: []
+cloudymc_mc_root_dir: /opt/minecraft-server
+cloudymc_mc_data_dir: "{{ cloudymc_mc_root_dir }}/data"
+cloudymc_mc_memory_mb: "{{ ansible_facts['memtotal_mb'] - 2048 }}"
 
-mc_admin_user: minecraft-admin
-mc_admin_group: minecraft-admin
-mc_runner_user: minecraft-runner
-mc_admin_uid: 1200
-mc_admin_gid: 1200
-mc_runner_uid: 1201
+cloudymc_mc_admin_user: minecraft-admin
+cloudymc_mc_admin_group: minecraft-admin
+cloudymc_mc_runner_user: minecraft-runner
+cloudymc_mc_admin_uid: 1200
+cloudymc_mc_admin_gid: 1200
+cloudymc_mc_runner_uid: 1201
 
-sftp_group: sftpusers
-system_timezone: Etc/UTC
+cloudymc_sftp_group: sftpusers
+cloudymc_system_timezone: Etc/UTC
