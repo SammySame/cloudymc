@@ -69,8 +69,6 @@ def run_pipeline(config: dict, apply=False):
 		yield f'data: {json.dumps({"error": str(e)})}\n\n'
 		return
 
-	yield f'data: {json.dumps({"debug": tf_vars})}\n\n'
-
 	for event in run_terraform(TERRAFORM_PATH, apply):
 		yield event
 		data = json.loads(event.replace('data: ', ''))
