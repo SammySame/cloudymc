@@ -14,5 +14,5 @@
 	"oci.ocpus": "instance_ocpus",
 	"oci.ram": "instance_ram",
 	"oci.volumeSize": "instance_volume_size",
-	"minecraft.additionalPorts": "ingress_ports"
+	"dynamic.combinedPorts": "ingress_ports"
 }

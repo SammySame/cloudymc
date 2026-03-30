@@ -1,8 +1,9 @@
 export default function transformFormData(formData: Record<string, any>) {
 	let formDataCopy = structuredClone(formData);
 
-	// Combine into singular array for Terraform
-	formDataCopy.minecraft.additionalPorts.push({
+	// Combine ports into singular array for Terraform
+	formDataCopy.dynamic.combinedPorts = formDataCopy.minecraft.additionalPorts;
+	formDataCopy.minecraft.combinedPorts.push({
 		number: formDataCopy.minecraft.serverPort,
 		protocol: 'TCP',
 	});
