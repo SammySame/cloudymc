@@ -12,6 +12,11 @@ output "instance_address" {
   sensitive   = true
 }
 
+output "instance_public_ssh_key_contents" {
+  description = "Instance public SSH key contents."
+  value       = data.oci_core_instance.this.metadata.authorized_keys
+}
+
 output "ansible_inventory" {
   description = "Inventory file used by Ansible"
   value       = local.ansible_inv
