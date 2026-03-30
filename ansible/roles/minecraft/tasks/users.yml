@@ -50,8 +50,7 @@
   become: true
   ansible.posix.authorized_key:
     user: "{{ cloudymc_mc_admin_user }}"
-    key: "{{ lookup('ansible.builtin.file', item) }}"
+    key: "{{ lookup('ansible.builtin.file', cloudymc_mc_sftp_public_key_file) }}"
     path: /etc/ssh/authorized_keys/{{ cloudymc_mc_admin_user }}
     exclusive: true
     state: present
-  loop: cloudymc_mc_sftp_public_key_files

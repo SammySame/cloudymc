@@ -1,5 +1,5 @@
 locals {
-  ssh_keys = [for path in var.public_ssh_key_paths : file(path)]
+  ssh_key = file(var.public_ssh_key_path)
 }
 
 resource "oci_core_instance" "this" {
@@ -27,7 +27,7 @@ resource "oci_core_instance" "this" {
     subnet_cidr               = var.subnet_cidr
   }
   metadata = {
-    "ssh_authorized_keys" = join("\n", [for key in local.ssh_keys : key])
+    "ssh_authorized_keys" = local.ssh_key
   }
   instance_options {
     are_legacy_imds_endpoints_disabled = true

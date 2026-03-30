@@ -18,9 +18,8 @@
 									"children": [
 										{ "ui:col": { "md": 6, "children": ["identifier"] } },
 										{ "ui:col": { "md": 6, "children": ["timeZone"] } },
-										{ "ui:col": { "md": 12, "children": ["defaultSshKeys"] } },
-										{ "ui:col": { "md": 12, "children": ["sftpSshKeys"] } },
-										{ "ui:col": { "md": 12, "children": ["ansibleSshKey"] } }
+										{ "ui:col": { "md": 6, "children": ["defaultSshKey"] } },
+										{ "ui:col": { "md": 6, "children": ["sftpSshKey"] } }
 									]
 								}
 							}
@@ -102,22 +101,15 @@
 		"ui:title": "Time Zone",
 		"ui:help": "Used by the cloud instance. See [List of Time Zones](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)"
 	},
-	"defaultSshKeys": {
-		"ui:title": "Default User SSH Keys",
-		"ui:description": "Default cloud instance operating system user. At least one key required",
-		"items": { "ui:options": { "label": false }, "ui:placeholder": "my-default-ssh-key.pub" }
+	"defaultSshKey": {
+		"ui:title": "Default User SSH Key",
+		"ui:description": "Used by default and automation cloud instance users, that can modify anything on the instance",
+		"ui:placeholder": "my-default-ssh-key.pub"
 	},
-	"sftpSshKeys": {
-		"ui:title": "SFTP User SSH Keys",
-		"ui:description": "Cloud instance user that can only access and modify Minecraft server files. At least one key required",
-		"ui:placeholder": "my-sftp-ssh-key.pub",
-		"items": { "ui:options": { "label": false }, "ui:placeholder": "my-sftp-ssh-key.pub" }
-	},
-	"ansibleSshKey": {
-		"ui:title": "Automation User SSH Key",
-		"ui:description": "Cloud instance user that will automatically configure the instance",
-		"ui:placeholder": "my-automation-ssh-key.pub",
-		"items": { "ui:options": { "label": false } }
+	"sftpSshKey": {
+		"ui:title": "SFTP User SSH Key",
+		"ui:description": "Used by cloud instance user that can only access and modify Minecraft server files",
+		"ui:placeholder": "my-sftp-ssh-key.pub"
 	},
 	"providerType": {
 		"ui:title": "Provider Type",

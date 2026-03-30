@@ -17,18 +17,18 @@ module "subnet" {
 }
 
 module "instance" {
-  source               = "./modules/instance"
-  name_prefix          = var.identifier
-  shape                = var.instance_shape
-  image                = var.instance_image
-  ocpus                = var.instance_ocpus
-  ram                  = var.instance_ram
-  volume_size          = var.instance_volume_size
-  public_ssh_key_paths = var.public_ssh_key_paths
-  subnet_id            = module.subnet.subnet_id
-  subnet_cidr          = module.subnet.subnet_cidr
-  compartment_id       = oci_identity_compartment.this.id
-  availability_domain  = data.oci_identity_availability_domain.this.name
+  source              = "./modules/instance"
+  name_prefix         = var.identifier
+  shape               = var.instance_shape
+  image               = var.instance_image
+  ocpus               = var.instance_ocpus
+  ram                 = var.instance_ram
+  volume_size         = var.instance_volume_size
+  public_ssh_key_path = var.public_ssh_key_path
+  subnet_id           = module.subnet.subnet_id
+  subnet_cidr         = module.subnet.subnet_cidr
+  compartment_id      = oci_identity_compartment.this.id
+  availability_domain = data.oci_identity_availability_domain.this.name
 }
 
 module "budget" {

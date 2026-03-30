@@ -41,9 +41,9 @@ variable "subnet_cidr" {
   nullable    = false
 }
 
-variable "public_ssh_key_paths" {
-  description = "Path to the public SSH key/s used for the instance connection."
-  type        = list(string)
+variable "public_ssh_key_path" {
+  description = "Path to the public SSH key used for the instance connection."
+  type        = string
   nullable    = false
 }
 

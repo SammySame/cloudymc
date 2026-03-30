@@ -50,15 +50,14 @@ variable "alert_email_addresses" {
   sensitive   = true
 }
 
-variable "public_ssh_key_paths" {
-  description = "Path to the public SSH key/s used for SSH access into the instance."
-  type        = list(string)
-  default     = []
+variable "public_ssh_key_path" {
+  description = "Path to the public SSH key used for the instance connection."
+  type        = string
   nullable    = false
   sensitive   = true
   validation {
-    condition     = alltrue([for path in var.public_ssh_key_paths : fileexists(abspath(path))])
-    error_message = "One or more public SSH keys doesn't exist at the provided path."
+    condition     = fileexists(abspath(var.public_ssh_key_path))
+    error_message = "Public SSH key doesn't exist at the provided path."
   }
 }
 

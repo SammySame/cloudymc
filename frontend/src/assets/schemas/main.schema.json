@@ -12,17 +12,11 @@
 			"type": "string",
 			"default": "Etc/UTC"
 		},
-		"defaultSshKeys": {
-			"type": "array",
-			"items": { "type": "string", "minLength": 1 },
-			"minItems": 1
+		"defaultSshKey": {
+			"type": "string",
+			"minLength": 1
 		},
-		"sftpSshKeys": {
-			"type": "array",
-			"items": { "type": "string", "minLength": 1 },
-			"minItems": 1
-		},
-		"ansibleSshKey": {
+		"sftpSshKey": {
 			"type": "string",
 			"minLength": 1
 		},
@@ -36,9 +30,8 @@
 	"required": [
 		"identifier",
 		"timeZone",
-		"defaultSshKeys",
-		"sftpSshKeys",
-		"ansibleSshKey",
+		"defaultSshKey",
+		"sftpSshKey",
 		"minecraft",
 		"providerType"
 	],

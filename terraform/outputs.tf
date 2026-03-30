@@ -2,7 +2,7 @@ locals {
   ansible_inv = templatefile("hosts.yml.tftpl", {
     identifier           = var.identifier
     public_ip            = module.instance.public_ip
-    private_ssh_key_path = trimsuffix(var.public_ssh_key_paths[0], ".pub")
+    private_ssh_key_path = trimsuffix(var.public_ssh_key_path, ".pub")
   })
 }
 

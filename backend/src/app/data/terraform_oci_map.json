@@ -6,7 +6,7 @@
 	"oci.fingerprint": "fingerprint",
 	"oci.region": "region",
 	"oci.alertEmailAddresses": "alert_email_addresses",
-	"defaultSshKeys": "public_ssh_key_paths",
+	"defaultSshKey": "public_ssh_key_path",
 	"oci.availabilityDomainNumber": "availability_domain_number",
 	"identifier": "identifier",
 	"oci.image": "instance_image",
