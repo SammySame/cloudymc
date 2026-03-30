@@ -72,19 +72,47 @@ def run_pipeline(config: dict, apply=False):
 	for event in run_terraform(TERRAFORM_PATH, apply):
 		yield event
 		data = json.loads(event.replace('data: ', ''))
+
 		if data.get('done') and data.get('returnCode') == 0:
+			public_ssh_key_contents: str = get_terraform_output(
+				'instance_public_ssh_key_contents', TERRAFORM_PATH
+			)
+			if not public_ssh_key_contents:
+				yield f'data: {json.dumps({"error": "The returned instance public SSH key contents are empty"})}\n\n'
+				return
+
+			ansible_inventory: str = get_terraform_output('ansible_inventory', TERRAFORM_PATH)
+			if not ansible_inventory:
+				yield f'data: {json.dumps({"error": "The returned Ansible inventory is empty"})}\n\n'
+				return
+
+			try:
+				add_known_hosts(public_ssh_key_contents)
+			except Exception as e:
+				yield f'data: {json.dumps({"error": str(e)})}\n\n'
+
 			try:
 				ansible_vars_map = load_json(ANSIBLE_VARS_MAP_PATH)
 			except Exception as e:
 				yield f'data: {json.dumps({"error": str(e)})}\n\n'
 				return
 
-			ansible_inventory: str = get_terraform_output('ansible_inventory', TERRAFORM_PATH)
-			if not ansible_inventory:
-				yield f'data: {json.dumps({"error": "The returned Ansible inventory is empty"})}\n\n'
-
 			ansible_vars = map_json_keys(flat_config, ansible_vars_map)
 			yield from run_ansible(ansible_vars, ansible_inventory, ANSIBLE_PATH)
+
+
+def add_known_hosts(ssh_key: str, path='~/.ssh/known_hosts'):
+	known_hosts_path = os.path.expanduser(path)
+	try:
+		with open(known_hosts_path, 'w') as file:
+			file.write(ssh_key)
+	except PermissionError:
+		raise PermissionError(
+			f'Insufficient permissions to write into ${known_hosts_path} file'
+		) from None
+	except Exception:
+		raise Exception('Cannot save known_hosts file') from None
+	os.chmod(known_hosts_path, 0o600)
 
 
 if __name__ == '__main__':
