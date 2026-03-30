@@ -34,7 +34,7 @@ export default function App() {
 				const data = await loadForm('current_config');
 				if (data) setFormData(data);
 			} catch (error) {
-				console.error(error);
+				console.error('Failed to load user form data:', error);
 			}
 		};
 		fetchData();
@@ -68,7 +68,7 @@ export default function App() {
 			await submitForm(transformFormData(formData));
 			await saveForm(formData);
 		} catch (error) {
-			console.error(`Failed to submit form data: ${error}`);
+			console.error(`Failed to submit user form data: ${error}`);
 		}
 	};
 

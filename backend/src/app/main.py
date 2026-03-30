@@ -78,12 +78,12 @@ def run_pipeline(config: dict, apply=False):
 				'instance_public_ssh_key_contents', TERRAFORM_PATH
 			)
 			if not public_ssh_key_contents:
-				yield f'data: {json.dumps({"error": "The returned instance public SSH key contents are empty"})}\n\n'
+				yield f'data: {json.dumps({"error": "Empty Terraform output for: instance public SSH key contents"})}\n\n'
 				return
 
 			ansible_inventory: str = get_terraform_output('ansible_inventory', TERRAFORM_PATH)
 			if not ansible_inventory:
-				yield f'data: {json.dumps({"error": "The returned Ansible inventory is empty"})}\n\n'
+				yield f'data: {json.dumps({"error": "Empty Terraform output for: Ansible inventory"})}\n\n'
 				return
 
 			try:
@@ -108,10 +108,10 @@ def add_known_hosts(ssh_key: str, path='~/.ssh/known_hosts'):
 			file.write(ssh_key)
 	except PermissionError:
 		raise PermissionError(
-			f'Insufficient permissions to write into ${known_hosts_path} file'
+			f'Insufficient permissions to write into: ${known_hosts_path}'
 		) from None
 	except Exception:
-		raise Exception('Cannot save known_hosts file') from None
+		raise Exception(f'Cloud not save known_hosts file at: ${known_hosts_path}') from None
 	os.chmod(known_hosts_path, 0o600)
 
 
