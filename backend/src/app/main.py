@@ -1,13 +1,13 @@
 import json
 import logging
 import os.path
-import subprocess
 
 from flask import Response, jsonify, request, stream_with_context
 
 from app import MODULE_ROOT_DIR, PROJECT_ROOT_DIR, app
 
 from .utils.json_helpers import flatten_json, load_json, map_json_keys, save_json
+from .utils.processes import get_terraform_output, run_ansible, run_terraform
 
 logging.basicConfig(
 	level=logging.INFO, format='%(asctime)s | %(levelname)s | %(message)s', datefmt='%H:%M:%S'
@@ -87,64 +87,6 @@ def run_pipeline(config: dict, apply=False):
 
 			ansible_vars = map_json_keys(flat_config, ansible_vars_map)
 			yield from run_ansible(ansible_vars, ansible_inventory, ANSIBLE_PATH)
-
-
-def run_terraform(cwd: str = '.', apply=False):
-	process = subprocess.Popen(
-		['terraform', 'apply', '-auto-approve', '-input=false', '-no-color']
-		if apply
-		else ['terraform', 'plan', '-input=false', '-no-color'],
-		cwd=cwd,
-		stdin=subprocess.PIPE,
-		stdout=subprocess.PIPE,
-		stderr=subprocess.STDOUT,
-		text=True,
-		bufsize=1,
-	)
-
-	assert process.stdout is not None
-	for line in process.stdout:
-		yield f'data: {json.dumps({"stage": "terraform", "line": line.rstrip()})}\n\n'
-
-	process.wait()
-	yield f'data: {json.dumps({"stage": "terraform", "done": True, "returnCode": process.returncode})}\n\n'
-
-
-def get_terraform_output(name: str, cwd: str = '.'):
-	process = subprocess.run(
-		['terraform', 'output', '-raw', '-no-color', name], cwd=cwd, capture_output=True, text=True
-	)
-	return process.stdout
-
-
-def run_ansible(variables: dict, inventory: str, cwd: str = '.', apply=False):
-	process = subprocess.Popen(
-		[
-			'ansible-playbook',
-			'-i',
-			'/dev/stdin',
-			'-e',
-			json.dumps(variables),
-			'site.yml',
-			'--check' if not apply else '',
-		],
-		cwd=cwd,
-		stdin=subprocess.PIPE,
-		stdout=subprocess.PIPE,
-		stderr=subprocess.STDOUT,
-		text=True,
-		bufsize=1,
-	)
-
-	assert process.stdout and process.stdin is not None
-	process.stdin.write(inventory)
-	process.stdin.close()
-
-	for line in process.stdout:
-		yield f'data: {json.dumps({"stage": "ansible", "line": line.rstrip()})}\n\n'
-
-	process.wait()
-	yield f'data: {json.dumps({"stage": "ansible", "done": True, "returnCode": process.returncode})}\n\n'
 
 
 if __name__ == '__main__':
