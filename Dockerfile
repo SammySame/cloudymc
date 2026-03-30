@@ -3,6 +3,7 @@ ARG PGID=1000
 ARG USERNAME=appuser
 
 ARG ROOT_PATH=/app
+# Changing SSH_KEYS_PATH will break things
 ARG SSH_KEYS_PATH=/opt/ssh_keys
 ARG PYTHON_VENV_PATH=/opt/venv
 ARG ANSIBLE_COLLECTIONS_PATH=/usr/share/ansible/collections
