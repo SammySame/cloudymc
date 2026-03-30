@@ -27,8 +27,8 @@ cloudymc_mc_commands_disconnect: []
 
 cloudymc_mc_compose_file:
 cloudymc_mc_sftp_public_key_file:
-cloudymc_mc_root_dir: /opt/minecraft-server
-cloudymc_mc_data_dir: "{{ cloudymc_mc_root_dir }}/data"
+cloudy_mc_root_path: /opt/minecraft-server
+cloudy_mc_data_path: "{{ cloudy_mc_root_path }}/data"
 cloudymc_mc_memory_mb: "{{ ansible_facts['memtotal_mb'] - 2048 }}"
 
 cloudymc_mc_admin_user: minecraft-admin

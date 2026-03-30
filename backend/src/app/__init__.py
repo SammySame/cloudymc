@@ -2,11 +2,11 @@ import os
 
 from flask import Flask, send_from_directory
 
-PROJECT_ROOT_DIR = os.path.abspath(os.path.join(__file__, '..', '..', '..', '..'))
-MODULE_ROOT_DIR = os.path.abspath(os.path.join(__file__, '..'))
+PROJECT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '..', '..', '..', '..'))
+MODULE_ROOT_PATH = os.path.abspath(os.path.join(__file__, '..'))
 
 app = Flask(
-	__name__, static_folder=os.path.join(PROJECT_ROOT_DIR, 'frontend', 'dist'), static_url_path=''
+	__name__, static_folder=os.path.join(PROJECT_ROOT_PATH, 'frontend', 'dist'), static_url_path=''
 )
 
 

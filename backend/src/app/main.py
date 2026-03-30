@@ -4,7 +4,7 @@ import os.path
 
 from flask import Response, jsonify, request, stream_with_context
 
-from app import MODULE_ROOT_DIR, PROJECT_ROOT_DIR, app
+from app import MODULE_ROOT_PATH, PROJECT_ROOT_PATH, app
 
 from .utils.json_helpers import flatten_json, load_json, map_json_keys, save_json
 from .utils.processes import get_terraform_output, run_ansible, run_terraform
@@ -13,7 +13,7 @@ logging.basicConfig(
 	level=logging.INFO, format='%(asctime)s | %(levelname)s | %(message)s', datefmt='%H:%M:%S'
 )
 
-CONFIG_PATH = os.path.join(PROJECT_ROOT_DIR, 'config', 'user')
+CONFIG_PATH = os.path.join(PROJECT_ROOT_PATH, 'config', 'user')
 
 
 @app.route('/api/forms/save', methods=['POST'])
@@ -48,11 +48,11 @@ def apply_config():
 
 
 def run_pipeline(config: dict, apply=False):
-	TERRAFORM_PATH = os.path.join(PROJECT_ROOT_DIR, 'terraform')
-	ANSIBLE_PATH = os.path.join(PROJECT_ROOT_DIR, 'ansible')
-	ANSIBLE_VARS_MAP_PATH = os.path.join(MODULE_ROOT_DIR, 'data', 'ansible_map.json')
-	TF_VARS_PATH = os.path.join(PROJECT_ROOT_DIR, 'terraform', 'terraform.tfvars.json')
-	TF_VARS_MAP_PATH = os.path.join(MODULE_ROOT_DIR, 'data', 'terraform_oci_map.json')
+	TERRAFORM_PATH = os.path.join(PROJECT_ROOT_PATH, 'terraform')
+	ANSIBLE_PATH = os.path.join(PROJECT_ROOT_PATH, 'ansible')
+	ANSIBLE_VARS_MAP_PATH = os.path.join(MODULE_ROOT_PATH, 'data', 'ansible_map.json')
+	TF_VARS_PATH = os.path.join(PROJECT_ROOT_PATH, 'terraform', 'terraform.tfvars.json')
+	TF_VARS_MAP_PATH = os.path.join(MODULE_ROOT_PATH, 'data', 'terraform_oci_map.json')
 
 	try:
 		tf_vars_map = load_json(TF_VARS_MAP_PATH)

@@ -9,13 +9,13 @@ import { dirname } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const SCHEMA_DIR = path.resolve(__dirname, 'src/assets/schemas/');
-const SCHEMA_PATH = path.resolve(SCHEMA_DIR, 'main.schema.json');
-const UI_SCHEMA_PATH = path.resolve(SCHEMA_DIR, 'main.uischema.json');
+const SCHEMA_PATH = path.resolve(__dirname, 'src/assets/schemas/');
+const MAIN_SCHEMA_PATH = path.resolve(SCHEMA_PATH, 'main.schema.json');
+const UI_SCHEMA_PATH = path.resolve(SCHEMA_PATH, 'main.uischema.json');
 const OUTPUT_PATH = path.resolve(__dirname, 'src/assets/bundled.schema.json');
 
 async function bundleSchema() {
-	const schema = await $RefParser.bundle(SCHEMA_PATH);
+	const schema = await $RefParser.bundle(MAIN_SCHEMA_PATH);
 
 	fs.mkdirSync(path.dirname(OUTPUT_PATH), { recursive: true });
 	fs.writeFileSync(OUTPUT_PATH, JSON.stringify(schema, null, 2));
@@ -40,8 +40,7 @@ export default defineConfig({
 			},
 
 			async handleHotUpdate({ file, server }) {
-				if (file.includes(SCHEMA_DIR)) {
-					console.log(file);
+				if (file.includes(SCHEMA_PATH)) {
 					if (file.endsWith('.schema.json')) {
 						console.log(`[Schema Bundler] Schema file modified: ${file}`);
 						await bundleSchema();

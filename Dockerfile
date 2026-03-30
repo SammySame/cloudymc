@@ -56,7 +56,7 @@ RUN wget -q https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${T
 	&& rm -f tflint.zip \
 	&& chmod +x /usr/local/bin/tflint
 
-ENV TF_PLUGIN_CACHE_DIR=${TF_PLUGIN_CACHE_PATH}
+ENV TF_PLUGIN_CACHE_PATH=${TF_PLUGIN_CACHE_PATH}
 # Terraform copies from the cache into the .terraform directory, so the files are copied into the image itself
 RUN --mount=type=cache,target=/tmp/tf-cache \
 	--mount=type=bind,target=./terraform,Z \
@@ -105,7 +105,7 @@ RUN apt-get update \
 	&& apt-get clean \
 	&& rm -rf /var/lib/apt/lists/*
 
-ENV TF_PLUGIN_CACHE_DIR=${TF_PLUGIN_CACHE_PATH}
+ENV TF_PLUGIN_CACHE_PATH=${TF_PLUGIN_CACHE_PATH}
 COPY --link --from=terraform /usr/local/bin/terraform /usr/local/bin/terraform
 COPY --link --from=terraform /usr/local/bin/tflint /usr/local/bin/tflint
 COPY --link --from=terraform ${TF_PLUGIN_CACHE_PATH} ${TF_PLUGIN_CACHE_PATH}
@@ -146,7 +146,7 @@ ARG TF_PLUGIN_CACHE_PATH
 RUN --mount=type=cache,target=/root/.cache/pip \
 	pip install -r ./backend/requirements/prod.txt
 
-ENV TF_PLUGIN_CACHE_DIR=${TF_PLUGIN_CACHE_PATH}
+ENV TF_PLUGIN_CACHE_PATH=${TF_PLUGIN_CACHE_PATH}
 COPY --link --from=terraform ${TF_PLUGIN_CACHE_PATH} ${TF_PLUGIN_CACHE_PATH}
 
 COPY --link --from=node-build ./frontend/dist ./frontend/dist

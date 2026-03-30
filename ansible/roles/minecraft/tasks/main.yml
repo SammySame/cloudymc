@@ -4,7 +4,7 @@
 - name: create minecraft server root directory
   become: true
   ansible.builtin.file:
-    name: "{{ cloudymc_mc_server_root_dir }}"
+    name: "{{ cloudymc_mc_server_root_path }}"
     state: directory
     owner: "{{ cloudymc_mc_admin_user }}"
     group: "{{ cloudymc_mc_admin_group }}"
@@ -13,7 +13,7 @@
 - name: create minecraft server data directory
   become: true
   ansible.builtin.file:
-    name: "{{ cloudymc_mc_server_data_dir }}"
+    name: "{{ cloudymc_mc_server_data_path }}"
     state: directory
     owner: "{{ cloudymc_mc_runner_user }}"
     group: "{{ cloudymc_mc_admin_group }}"
@@ -23,7 +23,7 @@
   become: true
   ansible.posix.mount:
     path: /home/{{ cloudymc_mc_admin_user }}/minecraft-server
-    src: "{{ cloudymc_mc_server_data_dir }}"
+    src: "{{ cloudymc_mc_server_data_path }}"
     opts: bind
     fstype: none
     state: mounted
@@ -42,7 +42,7 @@
   become: true
   ansible.builtin.copy:
     src: "{{ cloudymc_mc_server_compose_file }}"
-    dest: "{{ cloudymc_mc_server_root_dir }}/compose.yml"
+    dest: "{{ cloudymc_mc_server_root_path }}/compose.yml"
     owner: root
     group: root
     mode: "0664"
@@ -55,7 +55,7 @@
   become: true
   ansible.builtin.template:
     src: compose.yml.j2
-    dest: "{{ cloudymc_mc_server_root_dir }}/compose.yml"
+    dest: "{{ cloudymc_mc_server_root_path }}/compose.yml"
     owner: root
     group: root
     mode: "0664"
@@ -82,7 +82,7 @@
 - name: create and start minecraft server
   become: true
   community.docker.docker_compose_v2:
-    project_src: "{{ cloudymc_mc_server_root_dir }}"
+    project_src: "{{ cloudymc_mc_server_root_path }}"
     build: never
     state: present
   register: docker_output
