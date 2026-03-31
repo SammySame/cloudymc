@@ -48,9 +48,9 @@ def apply_config():
 
 
 def run_pipeline(config: dict, apply=False):
-	TERRAFORM_PATH = os.path.join(PROJECT_ROOT_PATH, 'terraform')
 	ANSIBLE_PATH = os.path.join(PROJECT_ROOT_PATH, 'ansible')
 	ANSIBLE_VARS_MAP_PATH = os.path.join(MODULE_ROOT_PATH, 'data', 'ansible_map.json')
+	TF_PATH = os.path.join(PROJECT_ROOT_PATH, 'terraform')
 	TF_VARS_PATH = os.path.join(PROJECT_ROOT_PATH, 'terraform', 'terraform.tfvars.json')
 	TF_VARS_MAP_PATH = os.path.join(MODULE_ROOT_PATH, 'data', 'terraform_oci_map.json')
 
@@ -69,19 +69,19 @@ def run_pipeline(config: dict, apply=False):
 		yield f'data: {json.dumps({"error": str(e)})}\n\n'
 		return
 
-	for event in run_terraform(TERRAFORM_PATH, apply):
+	for event in run_terraform(TF_PATH, apply):
 		yield event
 		data = json.loads(event.replace('data: ', ''))
 
 		if data.get('done') and data.get('returnCode') == 0:
 			public_ssh_key_contents: str = get_terraform_output(
-				'instance_public_ssh_key_contents', TERRAFORM_PATH
+				'instance_public_ssh_key_contents', TF_PATH
 			)
 			if not public_ssh_key_contents:
 				yield f'data: {json.dumps({"error": "Empty Terraform output for: instance public SSH key contents"})}\n\n'
 				return
 
-			ansible_inventory: str = get_terraform_output('ansible_inventory', TERRAFORM_PATH)
+			ansible_inventory: str = get_terraform_output('ansible_inventory', TF_PATH)
 			if not ansible_inventory:
 				yield f'data: {json.dumps({"error": "Empty Terraform output for: Ansible inventory"})}\n\n'
 				return
