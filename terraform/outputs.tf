@@ -14,7 +14,7 @@ output "instance_address" {
 
 output "instance_public_ssh_key_contents" {
   description = "Instance public SSH key contents."
-  value       = data.oci_core_instance.this.metadata.authorized_keys
+  value       = data.oci_core_instance.this.metadata["ssh_authorized_keys"]
 }
 
 output "ansible_inventory" {
