@@ -20,15 +20,15 @@ def load_json(file_path: str) -> dict:
 	try:
 		with open(file_path) as file:
 			return json.load(file)
-	except FileNotFoundError:
-		raise FileNotFoundError(f'Could not find JSON file at: {file_path}') from None
-	except Exception:
-		raise Exception(f'Could not load JSON file at: {file_path}') from None
+	except FileNotFoundError as e:
+		raise FileNotFoundError(f'Could not find JSON file at: {file_path}') from e
+	except Exception as e:
+		raise Exception(f'Could not load JSON file at: {file_path}') from e
 
 
 def save_json(data, output_path: str) -> None:
 	try:
 		with open(output_path, 'w') as file:
 			json.dump(data, file, indent=2)
-	except Exception:
-		raise Exception(f'Could not save JSON file at: {output_path}') from None
+	except Exception as e:
+		raise Exception(f'Could not save JSON file at: {output_path}') from e
