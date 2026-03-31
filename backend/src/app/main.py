@@ -1,6 +1,8 @@
 import json
 import logging
 import os.path
+from collections.abc import Callable, Generator
+from typing import Any
 
 from flask import Response, jsonify, request, stream_with_context
 
@@ -13,14 +15,19 @@ logging.basicConfig(
 	level=logging.INFO, format='%(asctime)s | %(levelname)s | %(message)s', datefmt='%H:%M:%S'
 )
 
-CONFIG_PATH = os.path.join(PROJECT_ROOT_PATH, 'config', 'user')
+_CONFIG_PATH = os.path.join(PROJECT_ROOT_PATH, 'config', 'user')
+_TF_PATH = os.path.join(PROJECT_ROOT_PATH, 'terraform')
+_TF_VARS_PATH = os.path.join(PROJECT_ROOT_PATH, 'terraform', 'terraform.tfvars.json')
+_TF_VARS_MAP_PATH = os.path.join(MODULE_ROOT_PATH, 'data', 'terraform_oci_map.json')
+_ANSIBLE_PATH = os.path.join(PROJECT_ROOT_PATH, 'ansible')
+_ANSIBLE_MAP_PATH = os.path.join(MODULE_ROOT_PATH, 'data', 'ansible_map.json')
 
 
 @app.route('/api/forms/save', methods=['POST'])
 def save_config():
 	config = request.json
 	try:
-		save_json(config, os.path.join(CONFIG_PATH, 'current_config.json'))
+		save_json(config, os.path.join(_CONFIG_PATH, 'current_config.json'))
 		return {}, 200
 	except Exception as e:
 		return jsonify({'error': str(e)}), 500
@@ -30,7 +37,7 @@ def save_config():
 def load_config():
 	file_name = request.args.get('file_name')
 	try:
-		return load_json(os.path.join(CONFIG_PATH, f'{file_name}.json'))
+		return load_json(os.path.join(_CONFIG_PATH, f'{file_name}.json'))
 	except FileNotFoundError as e:
 		return jsonify({'error': str(e)}), 404
 	except Exception as e:
@@ -48,64 +55,63 @@ def apply_config():
 
 
 def run_pipeline(config: dict, apply=False):
-	ANSIBLE_PATH = os.path.join(PROJECT_ROOT_PATH, 'ansible')
-	ANSIBLE_VARS_MAP_PATH = os.path.join(MODULE_ROOT_PATH, 'data', 'ansible_map.json')
-	TF_PATH = os.path.join(PROJECT_ROOT_PATH, 'terraform')
-	TF_VARS_PATH = os.path.join(PROJECT_ROOT_PATH, 'terraform', 'terraform.tfvars.json')
-	TF_VARS_MAP_PATH = os.path.join(MODULE_ROOT_PATH, 'data', 'terraform_oci_map.json')
+	def _error_event(message: str) -> str:
+		return f'data: {json.dumps({"error": message})}\n\n'
+
+	def _run_process(func: Callable[[], Generator[str, Any]]):
+		for event in func():
+			data = json.loads(event.replace('data: ', ''))
+			if not data.get('done'):
+				yield event
+				continue
+			if data.get('returnCode') == 0:
+				yield event
+				break
+			else:
+				yield f'data: {json.dumps({"error": str(event)})}\n\n'
+				return
 
 	try:
-		tf_vars_map = load_json(TF_VARS_MAP_PATH)
+		tf_vars_map = load_json(_TF_VARS_MAP_PATH)
 	except Exception as e:
-		yield f'data: {json.dumps({"error": str(e)})}\n\n'
+		yield _error_event(str(e))
 		return
 
 	flat_config = flatten_json(config)
 	tf_vars = map_json_keys(flat_config, tf_vars_map)
 
 	try:
-		save_json(tf_vars, TF_VARS_PATH)
+		save_json(tf_vars, _TF_VARS_PATH)
 	except Exception as e:
-		yield f'data: {json.dumps({"error": str(e)})}\n\n'
+		yield _error_event(str(e))
 		return
 
-	for event in run_terraform(TF_PATH, apply):
-		yield event
-		data = json.loads(event.replace('data: ', ''))
+	yield from _run_process(lambda: run_terraform(_TF_PATH, apply))
 
-		if data.get('done'):
-			if data.get('returnCode') != 0:
-				yield f'data: {json.dumps({"error": "Terraform process returned with non-zero return code"})}\n\n'
-				return
-			public_ssh_key_contents: str = get_terraform_output(
-				'instance_public_ssh_key_contents', TF_PATH
-			)
-			if not public_ssh_key_contents:
-				yield f'data: {json.dumps({"error": "Empty Terraform output for: instance public SSH key contents"})}\n\n'
-				return
+	public_ssh_key_contents: str = get_terraform_output('public_ssh_key_contents', _TF_PATH)
+	if not public_ssh_key_contents:
+		yield _error_event('Empty Terraform output for: instance public SSH key contents')
+		return
 
-			ansible_inventory: str = get_terraform_output('ansible_inventory', TF_PATH)
-			if not ansible_inventory:
-				yield f'data: {json.dumps({"error": "Empty Terraform output for: Ansible inventory"})}\n\n'
-				return
+	ansible_inventory: str = get_terraform_output('ansible_inventory', _TF_PATH)
+	if not ansible_inventory:
+		yield _error_event('Empty Terraform output for: Ansible inventory')
+		return
 
-			try:
-				add_known_hosts(public_ssh_key_contents)
-			except Exception as e:
-				yield f'data: {json.dumps({"error": str(e)})}\n\n'
+	try:
+		add_known_hosts(public_ssh_key_contents)
+	except Exception as e:
+		yield _error_event(str(e))
+		return
 
-			try:
-				ansible_vars_map = load_json(ANSIBLE_VARS_MAP_PATH)
-			except Exception as e:
-				yield f'data: {json.dumps({"error": str(e)})}\n\n'
-				return
+	try:
+		ansible_map = load_json(_ANSIBLE_MAP_PATH)
+	except Exception as e:
+		yield _error_event(str(e))
+		return
 
-			ansible_vars = map_json_keys(flat_config, ansible_vars_map)
-			for event in run_ansible(ansible_vars, ansible_inventory, ANSIBLE_PATH):
-				yield event
-				if data.get('done') and data.get('returnCode') != 0:
-					yield f'data: {json.dumps({"error": "Ansible process returned with non-zero return code"})}\n\n'
-					return
+	ansible_vars = map_json_keys(flat_config, ansible_map)
+	yield from _run_process(lambda: run_ansible(ansible_vars, ansible_inventory, _ANSIBLE_PATH))
 
 
 def add_known_hosts(ssh_key: str, path='~/.ssh/known_hosts'):
