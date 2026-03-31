@@ -73,7 +73,10 @@ def run_pipeline(config: dict, apply=False):
 		yield event
 		data = json.loads(event.replace('data: ', ''))
 
-		if data.get('done') and data.get('returnCode') == 0:
+		if data.get('done'):
+			if data.get('returnCode') != 0:
+				yield f'data: {json.dumps({"error": "Terraform process returned with non-zero return code"})}\n\n'
+				return
 			public_ssh_key_contents: str = get_terraform_output(
 				'instance_public_ssh_key_contents', TF_PATH
 			)
@@ -98,7 +101,11 @@ def run_pipeline(config: dict, apply=False):
 				return
 
 			ansible_vars = map_json_keys(flat_config, ansible_vars_map)
-			yield from run_ansible(ansible_vars, ansible_inventory, ANSIBLE_PATH)
+			for event in run_ansible(ansible_vars, ansible_inventory, ANSIBLE_PATH):
+				yield event
+				if data.get('done') and data.get('returnCode') != 0:
+					yield f'data: {json.dumps({"error": "Ansible process returned with non-zero return code"})}\n\n'
+					return
 
 
 def add_known_hosts(ssh_key: str, path='~/.ssh/known_hosts'):
