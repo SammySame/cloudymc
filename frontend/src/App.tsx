@@ -77,7 +77,7 @@ export default function App() {
 	};
 
 	// Since defaulting boolean to false while requiring it to be true
-	// which would make the user set it explicitly to true is impossible
+	// which would force the user to set it explicitly to true is impossible
 	// in RJSF, the value is checked here instead
 	const customValidate: CustomValidator<Record<string, any>> = function (
 		formData,
