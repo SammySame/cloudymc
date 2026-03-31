@@ -12,8 +12,8 @@ output "instance_address" {
   sensitive   = true
 }
 
-output "instance_public_ssh_key_contents" {
-  description = "Instance public SSH key contents."
+output "public_ssh_key_contents" {
+  description = "Instance default user public SSH key contents."
   value       = data.oci_core_instance.this.metadata["ssh_authorized_keys"]
 }
 
