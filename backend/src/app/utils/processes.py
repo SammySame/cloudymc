@@ -2,11 +2,11 @@ import json
 import subprocess
 
 
-def run_terraform(cwd: str = '.', apply=False):
+def run_terraform(cwd: str = '.', dry_run=True):
 	process = subprocess.Popen(
-		['terraform', 'apply', '-auto-approve', '-input=false', '-no-color']
-		if apply
-		else ['terraform', 'plan', '-input=false', '-no-color'],
+		['terraform', 'plan', '-input=false', '-no-color']
+		if dry_run
+		else ['terraform', 'apply', '-auto-approve', '-input=false', '-no-color'],
 		cwd=cwd,
 		stdin=subprocess.PIPE,
 		stdout=subprocess.PIPE,
@@ -30,7 +30,7 @@ def get_terraform_output(name: str, cwd: str = '.'):
 	return process.stdout
 
 
-def run_ansible(variables: dict, inventory: str, cwd: str = '.', apply=False):
+def run_ansible(variables: dict, inventory: str, cwd: str = '.', dry_run=True):
 	process = subprocess.Popen(
 		[
 			'ansible-playbook',
@@ -39,7 +39,7 @@ def run_ansible(variables: dict, inventory: str, cwd: str = '.', apply=False):
 			'-e',
 			json.dumps(variables),
 			'site.yml',
-			'--check' if not apply else '',
+			'--check' if dry_run else '',
 		],
 		cwd=cwd,
 		stdin=subprocess.PIPE,

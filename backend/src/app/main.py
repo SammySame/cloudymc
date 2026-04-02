@@ -46,15 +46,13 @@ def load_config():
 
 @app.route('/api/forms/submit', methods=['POST'])
 def apply_config():
-	body: tuple[dict, bool] = request.get_json(force=True)
+	body: tuple[dict, bool, bool] = request.get_json(force=True)
 	if body is None:
 		return jsonify({'error': 'Invalid or missing JSON body'}), 400
-	config = body[0]
-	apply = body[1]
-	return Response(stream_with_context(run_pipeline(config, apply)), mimetype='text/event-stream')
+	return Response(stream_with_context(run_pipeline(body)), mimetype='text/event-stream')
 
 
-def run_pipeline(config: dict, apply=False):
+def run_pipeline(data: tuple[dict, bool, bool]):
 	def _error_event(message: str) -> str:
 		return f'data: {json.dumps({"error": message})}\n\n'
 
@@ -77,6 +75,7 @@ def run_pipeline(config: dict, apply=False):
 		yield _error_event(str(e))
 		return
 
+	config = data[0]
 	flat_config = flatten_json(config)
 	tf_vars = map_json_keys(flat_config, tf_vars_map)
 
@@ -86,7 +85,8 @@ def run_pipeline(config: dict, apply=False):
 		yield _error_event(str(e))
 		return
 
-	yield from _run_process(lambda: run_terraform(_TF_PATH, apply))
+	tf_dry_run = data[1]
+	yield from _run_process(lambda: run_terraform(_TF_PATH, tf_dry_run))
 
 	public_ssh_key_contents: str = get_terraform_output('public_ssh_key_contents', _TF_PATH)
 	if not public_ssh_key_contents:
@@ -110,8 +110,11 @@ def run_pipeline(config: dict, apply=False):
 		yield _error_event(str(e))
 		return
 
+	ansible_dry_run = data[2]
 	ansible_vars = map_json_keys(flat_config, ansible_map)
-	yield from _run_process(lambda: run_ansible(ansible_vars, ansible_inventory, _ANSIBLE_PATH))
+	yield from _run_process(
+		lambda: run_ansible(ansible_vars, ansible_inventory, _ANSIBLE_PATH, ansible_dry_run)
+	)
 
 
 def add_known_hosts(ssh_key: str, path='~/.ssh/known_hosts'):

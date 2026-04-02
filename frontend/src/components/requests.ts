@@ -1,16 +1,26 @@
 /* global RequestInit */
 /* global RequestInfo */
 
-async function submitForm(formData: any, apply = false) {
+/**
+ * Submits form data into backend and listens to server-sent events (SSE)
+ * @param formData form data formatted as a JSON string.
+ * @param tfDryRun If true, Terraform will list changes being made without applying them.
+ * @param ansibleDryRun If true, Ansible will run most of the tasks without applying them.
+ */
+async function submitForm(
+	formData: any,
+	tfDryRun = true,
+	ansibleDryRun = true
+) {
 	const response = await getResponse('/api/forms/submit', {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify([formData, apply]),
+		body: JSON.stringify([formData, tfDryRun, ansibleDryRun]),
 	});
 
 	const reader = response!.body!.getReader();
 	const decoder = new TextDecoder();
-	let buffer = ''; // accumulates incomplete data
+	let buffer = '';
 
 	try {
 		while (true) {
