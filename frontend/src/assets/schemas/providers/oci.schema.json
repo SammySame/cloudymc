@@ -15,11 +15,11 @@
 		},
 		"tenancyOcid": {
 			"type": "string",
-			"pattern": "^ocid1\\.tenancy\\.oc1\\..+"
+			"pattern": "^ocid1\\.tenancy\\..+"
 		},
 		"userOcid": {
 			"type": "string",
-			"pattern": "^ocid1\\.user\\.oc1\\..+"
+			"pattern": "^ocid1\\.user\\..+"
 		},
 		"privateSshKey": {
 			"type": "string",
@@ -27,7 +27,7 @@
 		},
 		"fingerprint": {
 			"type": "string",
-			"pattern": "^(?:[^:]{2}:)+[^:]{2}$"
+			"minLength": 1
 		},
 		"region": {
 			"type": "string",
@@ -35,7 +35,7 @@
 		},
 		"image": {
 			"type": "string",
-			"pattern": "^ocid1\\.image\\.oc1\\..+"
+			"pattern": "^ocid1\\.image\\..+"
 		},
 		"shape": {
 			"type": "string",
