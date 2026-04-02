@@ -9,8 +9,8 @@ from flask import Response, jsonify, request, stream_with_context
 
 from app import MODULE_ROOT_PATH, PROJECT_ROOT_PATH, app
 
+from .processes import get_terraform_output, get_terraform_state, run_ansible, run_terraform
 from .utils.json_helpers import flatten_json, load_json, map_json_keys, save_json
-from .utils.processes import get_terraform_output, get_terraform_state, run_ansible, run_terraform
 
 logging.basicConfig(
 	level=logging.INFO, format='%(asctime)s | %(levelname)s | %(message)s', datefmt='%H:%M:%S'
