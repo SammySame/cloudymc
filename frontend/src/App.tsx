@@ -74,6 +74,17 @@ export default function App() {
 
 	const handleError = (errors: RJSFValidationError[]) => {
 		console.log('Validation error:', errors);
+
+		const errorField = document.querySelector<HTMLElement>('.rjsf-field-error');
+		if (!errorField) return;
+
+		errorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+		setTimeout(() => {
+			const input = errorField.querySelector<HTMLElement>(
+				'input, select, textarea'
+			);
+			input?.focus({ preventScroll: true });
+		}, 300);
 	};
 
 	// Since defaulting boolean to false while requiring it to be true
@@ -100,7 +111,6 @@ export default function App() {
 				validator={validator}
 				templates={{ ArrayFieldTitleTemplate, FieldErrorTemplate }}
 				onSubmit={handleSubmit}
-				focusOnFirstError={true}
 				onError={handleError}
 				formData={formData}
 				showErrorList={false}
