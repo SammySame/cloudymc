@@ -265,7 +265,7 @@
 		},
 		"image": {
 			"ui:title": "Image",
-			"ui:help": "See [Ubuntu 24.04](https://docs.oracle.com/en-us/iaas/images/ubuntu-2404/canonical-ubuntu-24-04-minimal-aarch64-2025-10-31-0.htm)"
+			"ui:help": "See [Ubuntu 24.04](https://docs.oracle.com/en-us/iaas/images/ubuntu-2404/canonical-ubuntu-24-04-minimal-2026-02-28-0.htm)"
 		},
 		"shape": {
 			"ui:title": "Shape",
