@@ -1,6 +1,7 @@
 import json
 import logging
 import os.path
+import threading
 from collections.abc import Callable, Generator
 from typing import Any
 
@@ -14,6 +15,8 @@ from .utils.processes import get_terraform_output, get_terraform_state, run_ansi
 logging.basicConfig(
 	level=logging.INFO, format='%(asctime)s | %(levelname)s | %(message)s', datefmt='%H:%M:%S'
 )
+
+pipeline_lock = threading.Lock()
 
 _CONFIG_PATH = os.path.join(PROJECT_ROOT_PATH, 'config', 'user')
 _TF_PATH = os.path.join(PROJECT_ROOT_PATH, 'terraform')
@@ -49,7 +52,17 @@ def apply_config():
 	body: tuple[dict, bool, bool] = request.get_json(force=True)
 	if body is None:
 		return jsonify({'error': 'Invalid or missing JSON body'}), 400
-	return Response(stream_with_context(run_pipeline(body)), mimetype='text/event-stream')
+
+	if not pipeline_lock.acquire(blocking=False):
+		return jsonify({'error': 'Previous request is already being processed'}), 409
+
+	def _run_locked():
+		try:
+			yield from run_pipeline(body)
+		finally:
+			pipeline_lock.release()
+
+	return Response(stream_with_context(_run_locked()), mimetype='text/event-stream')
 
 
 def run_pipeline(data: tuple[dict, bool, bool]):
