@@ -30,6 +30,13 @@ def get_terraform_output(name: str, cwd: str = '.'):
 	return process.stdout
 
 
+def get_terraform_state(cwd: str = '.'):
+	process = subprocess.run(
+		['terraform', 'state', 'list', '-no-color'], cwd=cwd, capture_output=True, text=True
+	)
+	return process.stdout
+
+
 def run_ansible(variables: dict, inventory: str, cwd: str = '.', dry_run=True):
 	process = subprocess.Popen(
 		[

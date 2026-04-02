@@ -9,7 +9,7 @@ from flask import Response, jsonify, request, stream_with_context
 from app import MODULE_ROOT_PATH, PROJECT_ROOT_PATH, app
 
 from .utils.json_helpers import flatten_json, load_json, map_json_keys, save_json
-from .utils.processes import get_terraform_output, run_ansible, run_terraform
+from .utils.processes import get_terraform_output, get_terraform_state, run_ansible, run_terraform
 
 logging.basicConfig(
 	level=logging.INFO, format='%(asctime)s | %(levelname)s | %(message)s', datefmt='%H:%M:%S'
@@ -66,7 +66,7 @@ def run_pipeline(data: tuple[dict, bool, bool]):
 				yield event
 				break
 			else:
-				yield f'data: {json.dumps({"error": str(event)})}\n\n'
+				yield _error_event(str(event))
 				return
 
 	try:
@@ -87,6 +87,11 @@ def run_pipeline(data: tuple[dict, bool, bool]):
 
 	tf_dry_run = data[1]
 	yield from _run_process(lambda: run_terraform(_TF_PATH, tf_dry_run))
+
+	tf_state = get_terraform_state(_TF_PATH)
+	if not tf_state or 'No state file was found!' in tf_state:
+		yield f'data: {json.dumps({"stage": "terraform", "line": "Ansible won't be run due to missing/empty Terraform state file"})}\n\n'
+		return
 
 	public_ssh_key_contents: str = get_terraform_output('public_ssh_key_contents', _TF_PATH)
 	if not public_ssh_key_contents:
