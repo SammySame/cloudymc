@@ -1,7 +1,9 @@
 import json
 import logging
 import os.path
+import queue
 import threading
+import uuid
 from collections.abc import Callable, Generator
 from typing import Any
 
@@ -16,7 +18,8 @@ logging.basicConfig(
 	level=logging.INFO, format='%(asctime)s | %(levelname)s | %(message)s', datefmt='%H:%M:%S'
 )
 
-pipeline_lock = threading.Lock()
+_pipeline_lock = threading.Lock()
+_jobs: dict[str, queue.Queue] = {}
 
 _CONFIG_PATH = os.path.join(PROJECT_ROOT_PATH, 'config', 'user')
 _TF_PATH = os.path.join(PROJECT_ROOT_PATH, 'terraform')
@@ -53,16 +56,42 @@ def apply_config():
 	if body is None:
 		return jsonify({'error': 'Invalid or missing JSON body'}), 400
 
-	if not pipeline_lock.acquire(blocking=False):
+	if not _pipeline_lock.acquire(blocking=False):
 		return jsonify({'error': 'Previous request is already being processed'}), 409
 
-	def _run_locked():
-		try:
-			yield from run_pipeline(body)
-		finally:
-			pipeline_lock.release()
+	job_id = str(uuid.uuid4())
+	q: queue.Queue = queue.Queue()
+	_jobs[job_id] = q
 
-	return Response(stream_with_context(_run_locked()), mimetype='text/event-stream')
+	def _run_thread():
+		try:
+			for event in run_pipeline(body):
+				q.put(event)
+		finally:
+			q.put(None)
+			_pipeline_lock.release()
+
+	threading.Thread(target=_run_thread, daemon=True).start()
+	return jsonify({'jobId': job_id}), 200
+
+
+@app.route('/api/forms/stream/<job_id>', methods=['GET'])
+def stream_job(job_id: str):
+	q = _jobs.get(job_id)
+	if q is None:
+		return jsonify({'error': 'Unknown job ID'}), 404
+
+	def _generate():
+		try:
+			while True:
+				event = q.get()
+				if event is None:
+					break
+				yield event
+		finally:
+			_jobs.pop(job_id, None)
+
+	return Response(stream_with_context(_generate()), mimetype='text/event-stream')
 
 
 def run_pipeline(data: tuple[dict, bool, bool]):

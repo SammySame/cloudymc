@@ -18,7 +18,12 @@ import {
 	ArrayFieldTitleTemplate,
 	FieldErrorTemplate,
 } from './components/FormTemplates';
-import { saveForm, loadForm, submitForm } from './components/requests';
+import {
+	saveForm,
+	loadForm,
+	submitForm,
+	streamJob,
+} from './components/requests';
 import transformFormData from './components/transformFormData';
 
 export default function App() {
@@ -65,7 +70,15 @@ export default function App() {
 
 	const handleSubmit = async ({ formData }: IChangeEvent<any>) => {
 		try {
-			await submitForm(transformFormData(formData));
+			const jobId = await submitForm(transformFormData(formData));
+			await streamJob(
+				jobId,
+				(stage, line) => console.log(`[${stage}] ${line}`),
+				(stage, code) => console.log(`[${stage}] Finished with code: ${code}`),
+				(msg) => {
+					throw new Error(msg);
+				}
+			);
 			await saveForm(formData);
 		} catch (error) {
 			console.error(`Failed to submit user form data: ${error}`);

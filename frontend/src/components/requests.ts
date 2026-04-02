@@ -1,12 +1,6 @@
 /* global RequestInit */
 /* global RequestInfo */
 
-/**
- * Submits form data into backend and listens to server-sent events (SSE)
- * @param formData form data formatted as a JSON string.
- * @param tfDryRun If true, Terraform will list changes being made without applying them.
- * @param ansibleDryRun If true, Ansible will run most of the tasks without applying them.
- */
 async function submitForm(
 	formData: any,
 	tfDryRun = true,
@@ -16,6 +10,20 @@ async function submitForm(
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify([formData, tfDryRun, ansibleDryRun]),
+	});
+	const { jobId } = await response!.json();
+	sessionStorage.setItem('jobId', jobId);
+	return jobId;
+}
+
+async function streamJob(
+	jobId: string,
+	onLine: (stage: string, line: string) => void,
+	onDone: (stage: string, returnCode: number) => void,
+	onError: (message: string) => void
+) {
+	const response = await getResponse(`/api/forms/stream/${jobId}`, {
+		method: 'GET',
 	});
 
 	const reader = response!.body!.getReader();
@@ -28,12 +36,10 @@ async function submitForm(
 			if (done) break;
 
 			buffer += decoder.decode(value, { stream: true });
-
 			const lines = buffer.split('\n');
 			buffer = lines.pop() ?? '';
 
-			const dataLines = lines.filter((l) => l.startsWith('data: '));
-			for (const line of dataLines) {
+			for (const line of lines.filter((l) => l.startsWith('data: '))) {
 				let data: any;
 				try {
 					data = JSON.parse(line.slice(6));
@@ -42,27 +48,15 @@ async function submitForm(
 					continue;
 				}
 
-				if (data.error) {
-					throw new Error(data.error);
-				} else if (data.debug) {
-					console.log(data.debug);
-				} else if (data.done) {
-					console.log(`[${data.stage}] finished with code: ${data.returnCode}`);
-				} else {
-					console.log(`[${data.stage}] ${data.line}`);
-				}
-			}
-			if (buffer.startsWith('data: ')) {
-				try {
-					const data = JSON.parse(buffer.slice(6));
-					console.log('Final chunk:', data);
-				} catch (_) {
-					/* discard */
-				}
+				if (data.error) onError(data.error);
+				else if (data.debug) console.log(data.debug);
+				else if (data.done) onDone(data.stage, data.returnCode);
+				else onLine(data.stage, data.line);
 			}
 		}
 	} finally {
 		reader.releaseLock();
+		sessionStorage.removeItem('jobId');
 	}
 }
 
@@ -120,4 +114,4 @@ async function getResponse(
 	}
 }
 
-export { submitForm, saveForm, loadForm };
+export { submitForm, saveForm, loadForm, streamJob };
