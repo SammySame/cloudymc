@@ -154,6 +154,7 @@ RUN cd ./frontend && npm run build
 FROM ansible AS prod
 ARG USERNAME
 ARG ROOT_PATH
+ARG USER_DATA_PATH
 ARG TF_PLUGIN_CACHE_PATH
 
 RUN --mount=type=cache,target=/root/.cache/pip \
@@ -170,9 +171,5 @@ RUN chown -R ${USERNAME}:${USERNAME} ./
 
 USER ${USERNAME}
 EXPOSE 8000
-VOLUME [
-	"${ROOT_PATH}/terraform/terraform.tfstate",
-	"${ROOT_PATH}/terraform/terraform.tfstate.backup",
-	"${USER_DATA_PATH}"
-]
+VOLUME ${USER_DATA_PATH}
 CMD ["gunicorn", "-w", "4", "-b", "0:8000", "backend.src.app:app"]
