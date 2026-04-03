@@ -37,8 +37,8 @@ RUN groupadd -g ${PGID} ${USERNAME} \
 	&& useradd -u ${PUID} -g ${PGID} -m -s /bin/bash ${USERNAME}
 
 WORKDIR ${ROOT_PATH}
-RUN mkdir -p ${SSH_KEYS_PATH} ${ANSIBLE_COLLECTIONS_PATH} \
-	${TF_PLUGIN_CACHE_PATH} ${USER_DATA_PATH}
+RUN mkdir -p ${SSH_KEYS_PATH} ${ANSIBLE_COLLECTIONS_PATH} ${TF_PLUGIN_CACHE_PATH} ${USER_DATA_PATH} \
+	&& chown 755 ${SSH_KEYS_PATH} ${USER_DATA_PATH}
 
 ENV USER_DATA_PATH=${USER_DATA_PATH} \
 	SSH_KEYS_PATH=${SSH_KEYS_PATH}
@@ -163,6 +163,9 @@ COPY --link --from=terraform ${TF_PLUGIN_CACHE_PATH} ${TF_PLUGIN_CACHE_PATH}
 
 COPY --link --from=node-build ./frontend/dist ./frontend/dist
 COPY ./ansible ./config ./terraform ./
+
+RUN find ${ROOT_PATH} -type d -print0 | xargs -0 chmod 755 \
+	&& find ${ROOT_PATH} -type f -print0 | xargs -0 chmod 644
 
 USER ${USERNAME}
 EXPOSE 8000
