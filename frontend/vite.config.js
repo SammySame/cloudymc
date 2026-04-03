@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite';
+import { viteStaticCopy } from 'vite-plugin-static-copy';
 import react from '@vitejs/plugin-react';
 import $RefParser from '@apidevtools/json-schema-ref-parser';
 import fs from 'fs';
@@ -56,5 +57,17 @@ export default defineConfig({
 				}
 			},
 		},
+		viteStaticCopy({
+			targets: [
+				{
+					src: 'node_modules/primereact/resources/themes/lara-dark-purple/**',
+					dest: 'themes',
+				},
+				{
+					src: 'node_modules/primereact/resources/themes/lara-light-purple/**',
+					dest: 'themes',
+				},
+			],
+		}),
 	],
 });
