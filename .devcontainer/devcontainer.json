@@ -14,9 +14,8 @@
 	"workspaceFolder": "/app",
 	"workspaceMount": "source=${localWorkspaceFolder},target=${containerWorkspaceFolder},type=bind,consistency=cached",
 	"mounts": [
-		"source=${localEnv:HOME}/.gitconfig,target=/root/.gitconfig,type=bind,consistency=cached,readonly",
-		"source=${localEnv:HOME}/.ssh/cloudymc,target=/opt/ssh_keys,type=bind,readonly",
-		"source=${localWorkspaceFolderBasename}-node_modules,target=${containerWorkspaceFolder}/frontend/node_modules,type=volume,Z"
+		"source=${localWorkspaceFolderBasename}-node_modules,target=${containerWorkspaceFolder}/frontend/node_modules,type=volume,Z",
+		"source=${localEnv:HOME}/.ssh/cloudymc,target=/opt/ssh_keys,type=bind,readonly"
 	],
 	"postCreateCommand": "pre-commit install && cd ./terraform && terraform init -input=false",
 	"forwardPorts": [5173, 5000],
