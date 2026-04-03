@@ -163,7 +163,8 @@ ENV TF_PLUGIN_CACHE_PATH=${TF_PLUGIN_CACHE_PATH}
 COPY --link --from=terraform ${TF_PLUGIN_CACHE_PATH} ${TF_PLUGIN_CACHE_PATH}
 
 COPY --link --from=node-build ${ROOT_PATH}/frontend/dist ./frontend/dist
-COPY ./ansible ./terraform ./
+COPY ./ansible ./ansible
+COPY ./terraform ./terraform
 
 RUN chown -R ${USERNAME}:${USERNAME} ./
 
