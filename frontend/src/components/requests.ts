@@ -69,8 +69,8 @@ async function saveForm(formData: any) {
 	console.log('User configuration saved successfully');
 }
 
-async function loadForm(fileName: string) {
-	const response = await getResponse(`/api/forms/load?file_name=${fileName}`, {
+async function loadForm() {
+	const response = await getResponse(`/api/forms/load`, {
 		method: 'GET',
 		headers: { Accept: 'application/json' },
 	});

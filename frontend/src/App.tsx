@@ -36,7 +36,7 @@ export default function App() {
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
-				const data = await loadForm('current_config');
+				const data = await loadForm();
 				if (data) setFormData(data);
 			} catch (error) {
 				console.error('Failed to load user form data:', error);
