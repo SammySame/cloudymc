@@ -31,8 +31,6 @@
 		}
 	},
 	"remoteEnv": {
-		"XDG_RUNTIME_DIR": "/tmp",
-		"WAYLAND_DISPLAY": "${env:WAYLAND_DISPLAY}",
 		"LANG": "C.utf8"
 	},
 	"customizations": {
