@@ -162,6 +162,7 @@ USER ${USERNAME}
 EXPOSE 8000
 VOLUME [
 	"${ROOT_PATH}/terraform/terraform.tfstate",
-	"${ROOT_PATH}/terraform/terraform.tfstate.backup"
+	"${ROOT_PATH}/terraform/terraform.tfstate.backup",
+	"${USER_DATA_PATH}"
 ]
 CMD ["gunicorn", "-w", "4", "-b", "0:8000", "backend.src.app:app"]
