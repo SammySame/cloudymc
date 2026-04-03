@@ -5,7 +5,6 @@
 		"context": "..",
 		"target": "dev",
 		"args": {
-			"SSH_KEYS_PATH": "/opt/ssh_keys",
 			"USERNAME": "vscode",
 			"PUID": "1000",
 			"PGID": "1000"
@@ -14,8 +13,7 @@
 	"workspaceFolder": "/app",
 	"workspaceMount": "source=${localWorkspaceFolder},target=${containerWorkspaceFolder},type=bind,consistency=cached",
 	"mounts": [
-		"source=${localWorkspaceFolderBasename}-node_modules,target=${containerWorkspaceFolder}/frontend/node_modules,type=volume,Z",
-		"source=${localEnv:HOME}/.ssh/cloudymc,target=/opt/ssh_keys,type=bind,readonly"
+		"source=${localWorkspaceFolderBasename}-node_modules,target=${containerWorkspaceFolder}/frontend/node_modules,type=volume,Z"
 	],
 	"postCreateCommand": "pre-commit install && cd ./terraform && terraform init -input=false",
 	"forwardPorts": [5173, 5000],

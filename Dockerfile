@@ -3,9 +3,8 @@ ARG PGID=1000
 ARG USERNAME=appuser
 
 ARG ROOT_PATH=/app
+# Changing USER_DATA_PATH will break things
 ARG USER_DATA_PATH=/etc/cloudymc/data
-# Changing SSH_KEYS_PATH will break things
-ARG SSH_KEYS_PATH=/opt/ssh_keys
 ARG PYTHON_VENV_PATH=/opt/venv
 ARG ANSIBLE_COLLECTIONS_PATH=/usr/share/ansible/collections
 ARG TF_PLUGIN_CACHE_PATH=/usr/share/terraform/plugin-cache
@@ -17,7 +16,6 @@ ARG PGID
 ARG USERNAME
 ARG ROOT_PATH
 ARG USER_DATA_PATH
-ARG SSH_KEYS_PATH
 ARG ANSIBLE_COLLECTIONS_PATH
 ARG TF_PLUGIN_CACHE_PATH
 
@@ -37,11 +35,13 @@ RUN groupadd -g ${PGID} ${USERNAME} \
 	&& useradd -u ${PUID} -g ${PGID} -m -s /bin/bash ${USERNAME}
 
 WORKDIR ${ROOT_PATH}
-RUN mkdir -p ${SSH_KEYS_PATH} ${ANSIBLE_COLLECTIONS_PATH} ${TF_PLUGIN_CACHE_PATH} ${USER_DATA_PATH} \
-	&& chown 755 ${SSH_KEYS_PATH} ${USER_DATA_PATH}
+RUN mkdir -p  ${ANSIBLE_COLLECTIONS_PATH} ${TF_PLUGIN_CACHE_PATH} ${USER_DATA_PATH} \
+	&& chown ${USERNAME}:${USERNAME} ${USER_DATA_PATH}
 
-ENV USER_DATA_PATH=${USER_DATA_PATH} \
-	SSH_KEYS_PATH=${SSH_KEYS_PATH}
+COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+ENV USER_DATA_PATH=${USER_DATA_PATH}
 
 
 # ======================= Terraform =======================
@@ -133,6 +133,7 @@ RUN --mount=type=cache,target=/root/.npm \
 
 USER ${USERNAME}
 EXPOSE 5173
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["sleep", "infinity"]
 
 
@@ -168,10 +169,11 @@ COPY --link --from=node-build ${ROOT_PATH}/frontend/dist ./frontend/dist
 COPY ./ansible ./ansible
 COPY ./terraform ./terraform
 
-RUN cd ./frontend && terraform init
+RUN cd ./terraform && terraform init
 RUN chown -R ${USERNAME}:${USERNAME} ./
 
 USER ${USERNAME}
 EXPOSE 8000
 VOLUME ${USER_DATA_PATH}
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["gunicorn", "-w", "4", "-b", "0:8000", "backend.src.app:app"]
