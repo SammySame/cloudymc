@@ -110,7 +110,7 @@ async function getResponse(
 		}
 
 		const body = await response.json().catch(() => null);
-		throw new Error(body.error ?? `HTTP error: ${response.status}`);
+		throw new Error(body?.error ?? `HTTP error: ${response.status}`);
 	}
 }
 
