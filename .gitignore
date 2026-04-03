@@ -5,9 +5,9 @@
 !.vscode/extensions.json
 .idea/
 .zed/
+.devcontainer/devcontainer.local.json
 
 # Project specific
-/config/user/
 bundled.schema.json
 
 # General
