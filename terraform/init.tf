@@ -1,4 +1,7 @@
 terraform {
+  backend "local" {
+    path = "/etc/cloudymc/data/terraform/terraform.tfstate"
+  }
   required_providers {
     oci = {
       source  = "oracle/oci"
