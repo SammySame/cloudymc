@@ -153,6 +153,7 @@ RUN cd ./frontend && npm run build
 # ======================= Production =======================
 FROM ansible AS prod
 ARG USERNAME
+ARG ROOT_PATH
 ARG TF_PLUGIN_CACHE_PATH
 
 RUN --mount=type=cache,target=/root/.cache/pip \
@@ -161,7 +162,7 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 ENV TF_PLUGIN_CACHE_PATH=${TF_PLUGIN_CACHE_PATH}
 COPY --link --from=terraform ${TF_PLUGIN_CACHE_PATH} ${TF_PLUGIN_CACHE_PATH}
 
-COPY --link --from=node-build ./frontend/dist ./frontend/dist
+COPY --link --from=node-build ${ROOT_PATH}/frontend/dist ./frontend/dist
 COPY ./ansible ./config ./terraform ./
 
 RUN find ${ROOT_PATH} -type d -print0 | xargs -0 chmod 755 \
