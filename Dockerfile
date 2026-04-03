@@ -34,6 +34,9 @@ WORKDIR ${ROOT_PATH}
 RUN mkdir -p ${SSH_KEYS_PATH} ${ANSIBLE_COLLECTIONS_PATH} \
 	${TF_PLUGIN_CACHE_PATH} ${USER_DATA_PATH}
 
+ENV USER_DATA_PATH=${USER_DATA_PATH} \
+	SSH_KEYS_PATH=${SSH_KEYS_PATH}
+
 
 # ======================= Terraform =======================
 FROM base AS terraform
