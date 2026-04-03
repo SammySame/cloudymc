@@ -3,6 +3,7 @@ ARG PGID=1000
 ARG USERNAME=appuser
 
 ARG ROOT_PATH=/app
+ARG USER_DATA_PATH=/etc/cloudymc/data
 # Changing SSH_KEYS_PATH will break things
 ARG SSH_KEYS_PATH=/opt/ssh_keys
 ARG PYTHON_VENV_PATH=/opt/venv
@@ -30,7 +31,8 @@ RUN groupadd -g ${PGID} ${USERNAME} \
 	&& useradd -u ${PUID} -g ${PGID} -m -s /bin/bash ${USERNAME}
 
 WORKDIR ${ROOT_PATH}
-RUN mkdir -p ${SSH_KEYS_PATH} ${ANSIBLE_COLLECTIONS_PATH} ${TF_PLUGIN_CACHE_PATH}
+RUN mkdir -p ${SSH_KEYS_PATH} ${ANSIBLE_COLLECTIONS_PATH} \
+	${TF_PLUGIN_CACHE_PATH} ${USER_DATA_PATH}
 
 
 # ======================= Terraform =======================

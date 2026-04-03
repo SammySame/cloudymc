@@ -7,7 +7,7 @@ from flask import Response, jsonify, request, stream_with_context
 
 from app import app
 
-from .config import CONFIG_PATH
+from .config import USER_DATA_PATH
 from .job_manager import job_manager
 from .runner import run_pipeline
 from .utils.json_helpers import load_json, save_json
@@ -21,7 +21,7 @@ logging.basicConfig(
 def save_config():
 	config = request.json
 	try:
-		save_json(config, os.path.join(CONFIG_PATH, 'current_config.json'))
+		save_json(config, os.path.join(USER_DATA_PATH, 'current_config.json'))
 		return {}, 200
 	except Exception as e:
 		return jsonify({'error': str(e)}), 500
@@ -31,7 +31,7 @@ def save_config():
 def load_config():
 	file_name = request.args.get('file_name')
 	try:
-		return load_json(os.path.join(CONFIG_PATH, f'{file_name}.json'))
+		return load_json(os.path.join(USER_DATA_PATH, f'{file_name}.json'))
 	except FileNotFoundError as e:
 		return jsonify({'error': str(e)}), 404
 	except Exception as e:
