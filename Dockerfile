@@ -20,6 +20,11 @@ ARG SSH_KEYS_PATH
 ARG ANSIBLE_COLLECTIONS_PATH
 ARG TF_PLUGIN_CACHE_PATH
 
+LABEL org.opencontainers.image.title="cloudymc"
+LABEL org.opencontainers.image.description="Run Minecraft servers in cloud!"
+# LABEL org.opencontainers.image.version="1.0.0"
+LABEL org.opencontainers.image.authors="SammySame"
+
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
 	&& apt-get install -y --no-install-recommends \
