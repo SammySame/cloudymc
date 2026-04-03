@@ -162,11 +162,13 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 
 ENV TF_PLUGIN_CACHE_PATH=${TF_PLUGIN_CACHE_PATH}
 COPY --link --from=terraform ${TF_PLUGIN_CACHE_PATH} ${TF_PLUGIN_CACHE_PATH}
+COPY --link --from=terraform /usr/local/bin/terraform /usr/local/bin/terraform
 
 COPY --link --from=node-build ${ROOT_PATH}/frontend/dist ./frontend/dist
 COPY ./ansible ./ansible
 COPY ./terraform ./terraform
 
+RUN cd ./frontend && terraform init
 RUN chown -R ${USERNAME}:${USERNAME} ./
 
 USER ${USERNAME}
