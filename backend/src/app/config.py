@@ -2,7 +2,7 @@ import os
 
 from app import MODULE_ROOT_PATH, PROJECT_ROOT_PATH
 
-USER_DATA_PATH = os.path.join('etc', 'cloudymc', 'data')
+CONFIG_FILE_NAME = 'config.json'
 TF_PATH = os.path.join(PROJECT_ROOT_PATH, 'terraform')
 TF_VARS_PATH = os.path.join(PROJECT_ROOT_PATH, 'terraform', 'terraform.tfvars.json')
 TF_VARS_MAP_PATH = os.path.join(MODULE_ROOT_PATH, 'data', 'terraform_oci_map.json')

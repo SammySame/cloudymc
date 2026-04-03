@@ -7,7 +7,7 @@ from flask import Response, jsonify, request, stream_with_context
 
 from app import app
 
-from .config import USER_DATA_PATH
+from .config import CONFIG_FILE_NAME
 from .job_manager import job_manager
 from .runner import run_pipeline
 from .utils.json_helpers import load_json, save_json
@@ -21,7 +21,8 @@ logging.basicConfig(
 def save_config():
 	config = request.json
 	try:
-		save_json(config, os.path.join(USER_DATA_PATH, 'current_config.json'))
+		user_data_path = load_environment_variable('USER_DATA_PATH')
+		save_json(config, os.path.join(user_data_path, CONFIG_FILE_NAME))
 		return {}, 200
 	except Exception as e:
 		return jsonify({'error': str(e)}), 500
@@ -29,9 +30,9 @@ def save_config():
 
 @app.route('/api/forms/load', methods=['GET'])
 def load_config():
-	file_name = request.args.get('file_name')
 	try:
-		return load_json(os.path.join(USER_DATA_PATH, f'{file_name}.json'))
+		user_data_path = load_environment_variable('USER_DATA_PATH')
+		return load_json(os.path.join(user_data_path, CONFIG_FILE_NAME))
 	except FileNotFoundError as e:
 		return jsonify({'error': str(e)}), 404
 	except Exception as e:
@@ -79,6 +80,13 @@ def stream_job(job_id: str):
 			job_manager.remove(job_id)
 
 	return Response(stream_with_context(_generate()), mimetype='text/event-stream')
+
+
+def load_environment_variable(name: str):
+	env_var = os.getenv(name)
+	if not env_var:
+		raise RuntimeError(f'Environment variable {name} is missing or empty')
+	return env_var
 
 
 if __name__ == '__main__':
