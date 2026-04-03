@@ -146,7 +146,7 @@ RUN --mount=type=cache,target=/root/.npm \
 	--mount=type=bind,source=./frontend/package.json,target=./frontend/package.json,Z \
 	--mount=type=bind,source=./frontend/package-lock.json,target=./frontend/package-lock.json,Z \
 	cd ./frontend && npm ci --no-audit --no-fund
-RUN --mount=type=bind,target=./frontend,Z \
+RUN --mount=type=bind,source=./frontend,target=./frontend,Z \
 	npm run build
 
 
