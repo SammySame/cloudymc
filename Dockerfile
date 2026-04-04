@@ -41,14 +41,14 @@ RUN mkdir -p  ${ANSIBLE_COLLECTIONS_PATH} ${TF_PLUGIN_CACHE_PATH} ${USER_DATA_PA
 COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-ENV USER_DATA_PATH=${USER_DATA_PATH}
+ENV USER_DATA_PATH=${USER_DATA_PATH} \
+	TF_PLUGIN_CACHE_PATH=${TF_PLUGIN_CACHE_PATH}
 
 
 # ======================= Terraform =======================
 FROM base AS terraform
 ARG TF_VERSION=1.14.7
 ARG TF_LINT_VERSION=v0.61.0
-ARG TF_PLUGIN_CACHE_PATH
 
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
@@ -68,7 +68,6 @@ RUN wget -q https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${T
 	&& rm -f tflint.zip \
 	&& chmod +x /usr/local/bin/tflint
 
-ENV TF_PLUGIN_CACHE_PATH=${TF_PLUGIN_CACHE_PATH}
 # Terraform copies from the cache into the .terraform directory, so the files are copied into the image itself
 RUN --mount=type=cache,target=/tmp/tf-cache \
 	--mount=type=bind,target=./terraform,Z \
@@ -103,7 +102,6 @@ RUN cd ./ansible && ansible-galaxy collection install --no-deps -r ./requirement
 # ======================= Development =======================
 FROM ansible AS dev
 ARG USERNAME
-ARG TF_PLUGIN_CACHE_PATH
 
 # VS Code requires en_US.UTF-8 locale for the pre-commit hooks
 # https://github.com/microsoft/vscode/issues/189924
@@ -116,7 +114,6 @@ RUN apt-get update \
 	&& apt-get clean \
 	&& rm -rf /var/lib/apt/lists/*
 
-ENV TF_PLUGIN_CACHE_PATH=${TF_PLUGIN_CACHE_PATH}
 COPY --link --from=terraform /usr/local/bin/terraform /usr/local/bin/terraform
 COPY --link --from=terraform /usr/local/bin/tflint /usr/local/bin/tflint
 COPY --link --from=terraform ${TF_PLUGIN_CACHE_PATH} ${TF_PLUGIN_CACHE_PATH}
@@ -155,12 +152,10 @@ FROM ansible AS prod
 ARG USERNAME
 ARG ROOT_PATH
 ARG USER_DATA_PATH
-ARG TF_PLUGIN_CACHE_PATH
 
 RUN --mount=type=cache,target=/root/.cache/pip \
 	pip install -r ./backend/requirements/prod.txt
 
-ENV TF_PLUGIN_CACHE_PATH=${TF_PLUGIN_CACHE_PATH}
 COPY --link --from=terraform ${TF_PLUGIN_CACHE_PATH} ${TF_PLUGIN_CACHE_PATH}
 COPY --link --from=terraform /usr/local/bin/terraform /usr/local/bin/terraform
 
