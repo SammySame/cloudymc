@@ -82,12 +82,10 @@ ARG PYTHON_VENV_PATH
 
 ENV PYTHON_VENV_PATH=${PYTHON_VENV_PATH} \
 	PATH="${PYTHON_VENV_PATH}/bin:${PATH}"
-COPY ./backend/requirements/common.txt ./backend/requirements/common.txt
-RUN --mount=type=cache,target=/root/.cache/pip \
+RUN --mount-type=bind,source=./backend/requirements/common.txt,target=./backend/requirements/common.txt
+	--mount=type=cache,target=/root/.cache/pip \
 	python3 -m venv ${PYTHON_VENV_PATH} \
 	&& pip install -r ./backend/requirements/common.txt
-
-COPY ./backend/ ./backend
 
 
 # ======================= Ansible =======================
@@ -118,7 +116,8 @@ COPY --link --from=terraform /usr/local/bin/terraform /usr/local/bin/terraform
 COPY --link --from=terraform /usr/local/bin/tflint /usr/local/bin/tflint
 COPY --link --from=terraform ${TF_PLUGIN_CACHE_PATH} ${TF_PLUGIN_CACHE_PATH}
 
-RUN --mount=type=cache,target=/root/.cache/pip \
+RUN --mount-type=bind,source=./backend/requirements/dev.txt,target=./backend/requirements/dev.txt
+	--mount=type=cache,target=/root/.cache/pip \
 	pip install -r ./backend/requirements/dev.txt
 
 RUN --mount=type=cache,target=/root/.npm \
@@ -160,6 +159,7 @@ COPY --link --from=terraform ${TF_PLUGIN_CACHE_PATH} ${TF_PLUGIN_CACHE_PATH}
 COPY --link --from=terraform /usr/local/bin/terraform /usr/local/bin/terraform
 
 COPY --link --from=node-build ${ROOT_PATH}/frontend/dist ./backend/app/static
+COPY ./backend/ ./backend
 COPY ./ansible ./ansible
 COPY ./terraform ./terraform
 
