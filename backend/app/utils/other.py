@@ -1,6 +1,13 @@
 import os
 
 
+def load_environment_variable(name: str):
+	env_var = os.getenv(name)
+	if not env_var:
+		raise RuntimeError(f'Environment variable {name} is missing or empty')
+	return env_var
+
+
 def add_known_hosts(ssh_key: str, path='~/.ssh/known_hosts'):
 	known_hosts_path = os.path.expanduser(path)
 	try:

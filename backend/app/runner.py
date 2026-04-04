@@ -2,10 +2,10 @@ import json
 from collections.abc import Callable, Generator
 from typing import Any
 
-from .config import ANSIBLE_MAP_PATH, ANSIBLE_PATH, TF_PATH, TF_VARS_MAP_PATH, TF_VARS_PATH
-from .processes import get_terraform_output, get_terraform_state, run_ansible, run_terraform
-from .utils.json_helpers import flatten_json, load_json, map_json_keys, save_json
-from .utils.ssh import add_known_hosts
+from app.config import ANSIBLE_MAP_PATH, ANSIBLE_PATH, TF_PATH, TF_VARS_MAP_PATH, TF_VARS_PATH
+from app.processes import get_terraform_output, get_terraform_state, run_ansible, run_terraform
+from app.utils.json_helpers import flatten_json, load_json, map_json_keys, save_json
+from app.utils.other import add_known_hosts
 
 
 def _error_event(message: str) -> str:

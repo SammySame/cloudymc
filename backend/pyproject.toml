@@ -8,11 +8,8 @@ version = "0.1.0"
 requires-python = ">=3.11"
 dependencies = []
 
-[tool.setuptools.packages.find]
-where = ["src"]
-
 [tool.setuptools.package-dir]
-cloudymc = "src/app"
+cloudymc = "app"
 
 [tool.ruff]
 line-length=100

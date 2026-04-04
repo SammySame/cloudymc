@@ -1,23 +1,26 @@
-import logging
 import os.path
 import threading
 import uuid
 
-from flask import Response, jsonify, request, stream_with_context
+from flask import Blueprint, Response, jsonify, request, stream_with_context
 
-from app import app
+from app.config import CONFIG_FILE_NAME
+from app.runner import run_pipeline
+from app.utils.job_manager import job_manager
+from app.utils.json_helpers import load_json, save_json
+from app.utils.other import load_environment_variable
 
-from .config import CONFIG_FILE_NAME
-from .job_manager import job_manager
-from .runner import run_pipeline
-from .utils.json_helpers import load_json, save_json
-
-logging.basicConfig(
-	level=logging.INFO, format='%(asctime)s | %(levelname)s | %(message)s', datefmt='%H:%M:%S'
-)
+api_bp = Blueprint('api', __name__, url_prefix='/api')
+static_bp = Blueprint('static', __name__, static_folder='static', static_url_path='/static')
 
 
-@app.route('/api/forms/save', methods=['POST'])
+@static_bp.route('/')
+def index():
+	assert static_bp.static_folder is not None
+	return static_bp.send_static_file('index.html')
+
+
+@api_bp.route('/forms/save', methods=['POST'])
 def save_config():
 	config = request.json
 	try:
@@ -28,7 +31,7 @@ def save_config():
 		return jsonify({'error': str(e)}), 500
 
 
-@app.route('/api/forms/load', methods=['GET'])
+@api_bp.route('/forms/load', methods=['GET'])
 def load_config():
 	try:
 		user_data_path = load_environment_variable('USER_DATA_PATH')
@@ -39,7 +42,7 @@ def load_config():
 		return jsonify({'error': str(e)}), 500
 
 
-@app.route('/api/forms/submit', methods=['POST'])
+@api_bp.route('/forms/submit', methods=['POST'])
 def apply_config():
 	body: tuple[dict, bool, bool] = request.get_json(force=True)
 	if body is None:
@@ -63,7 +66,7 @@ def apply_config():
 	return jsonify({'jobId': job_id}), 200
 
 
-@app.route('/api/forms/stream/<job_id>', methods=['GET'])
+@api_bp.route('/forms/stream/<job_id>', methods=['GET'])
 def stream_job(job_id: str):
 	q = job_manager.get(job_id)
 	if q is None:
@@ -80,14 +83,3 @@ def stream_job(job_id: str):
 			job_manager.remove(job_id)
 
 	return Response(stream_with_context(_generate()), mimetype='text/event-stream')
-
-
-def load_environment_variable(name: str):
-	env_var = os.getenv(name)
-	if not env_var:
-		raise RuntimeError(f'Environment variable {name} is missing or empty')
-	return env_var
-
-
-if __name__ == '__main__':
-	app.run(debug=True)

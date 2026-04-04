@@ -89,7 +89,6 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 	&& pip install -r ./backend/requirements/common.txt
 
 COPY ./backend/ ./backend
-RUN pip install -e ./backend
 
 
 # ======================= Ansible =======================
@@ -165,7 +164,7 @@ ENV TF_PLUGIN_CACHE_PATH=${TF_PLUGIN_CACHE_PATH}
 COPY --link --from=terraform ${TF_PLUGIN_CACHE_PATH} ${TF_PLUGIN_CACHE_PATH}
 COPY --link --from=terraform /usr/local/bin/terraform /usr/local/bin/terraform
 
-COPY --link --from=node-build ${ROOT_PATH}/frontend/dist ./frontend/dist
+COPY --link --from=node-build ${ROOT_PATH}/frontend/dist ./backend/app/static
 COPY ./ansible ./ansible
 COPY ./terraform ./terraform
 
@@ -176,4 +175,5 @@ USER ${USERNAME}
 EXPOSE 8000
 VOLUME ${USER_DATA_PATH}
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-CMD ["gunicorn", "-w", "4", "-b", "0:8000", "backend.src.app:app"]
+WORKDIR ${ROOT_PATH}/backend
+CMD ["gunicorn", "-w", "1", "-k", "gthread", "--threads", "2", "-b", "0:8000", "app:app"]

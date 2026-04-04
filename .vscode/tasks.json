@@ -5,10 +5,10 @@
 			"label": "Run Flask",
 			"type": "shell",
 			"command": "python",
-			"args": ["-m", "app.main"],
+			"args": ["run.py"],
 			"isBackground": true,
 			"options": {
-				"cwd": "${workspaceFolder}/backend/src"
+				"cwd": "${workspaceFolder}/backend"
 			},
 			"problemMatcher": []
 		},
