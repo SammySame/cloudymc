@@ -82,7 +82,7 @@ ARG PYTHON_VENV_PATH
 
 ENV PYTHON_VENV_PATH=${PYTHON_VENV_PATH} \
 	PATH="${PYTHON_VENV_PATH}/bin:${PATH}"
-RUN --mount-type=bind,source=./backend/requirements/common.txt,target=./backend/requirements/common.txt \
+RUN --mount=type=bind,source=./backend/requirements/common.txt,target=./backend/requirements/common.txt \
 	--mount=type=cache,target=/root/.cache/pip \
 	python3 -m venv ${PYTHON_VENV_PATH} \
 	&& pip install -r ./backend/requirements/common.txt
@@ -93,8 +93,8 @@ FROM python as ansible
 ARG ANSIBLE_COLLECTIONS_PATH
 
 ENV ANSIBLE_COLLECTIONS_PATH=${ANSIBLE_COLLECTIONS_PATH}
-RUN --mount-type=bind,source=./ansible/requirements.yml,target=./ansible/requirements.yml,Z \
-	--mount-type=cache,target=${ANSIBLE_COLLECTIONS_PATH} \
+RUN --mount=type=bind,source=./ansible/requirements.yml,target=./ansible/requirements.yml,Z \
+	--mount=type=cache,target=${ANSIBLE_COLLECTIONS_PATH} \
 	cd ./ansible && ansible-galaxy collection install --no-deps -r ./requirements.yml
 
 
@@ -117,7 +117,8 @@ COPY --link --from=terraform /usr/local/bin/terraform /usr/local/bin/terraform
 COPY --link --from=terraform /usr/local/bin/tflint /usr/local/bin/tflint
 COPY --link --from=terraform ${TF_PLUGIN_CACHE_PATH} ${TF_PLUGIN_CACHE_PATH}
 
-RUN --mount-type=bind,source=./backend/requirements/dev.txt,target=./backend/requirements/dev.txt \
+RUN --mount=type=bind,source=./backend/requirements/common.txt,target=./backend/requirements/common.txt \
+	--mount=type=bind,source=./backend/requirements/dev.txt,target=./backend/requirements/dev.txt \
 	--mount=type=cache,target=/root/.cache/pip \
 	pip install -r ./backend/requirements/dev.txt
 
@@ -153,7 +154,8 @@ ARG USERNAME
 ARG ROOT_PATH
 ARG USER_DATA_PATH
 
-RUN --mount-type=bind,source=./backend/requirements/prod.txt,target=./backend/requirements/prod.txt \
+RUN --mount=type=bind,source=./backend/requirements/common.txt,target=./backend/requirements/common.txt \
+	--mount=type=bind,source=./backend/requirements/prod.txt,target=./backend/requirements/prod.txt \
 	--mount=type=cache,target=/root/.cache/pip \
 	pip install -r ./backend/requirements/prod.txt
 
