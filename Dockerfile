@@ -92,9 +92,10 @@ RUN --mount-type=bind,source=./backend/requirements/common.txt,target=./backend/
 FROM python as ansible
 ARG ANSIBLE_COLLECTIONS_PATH
 
-COPY ./ansible/requirements.yml ./ansible/requirements.yml
 ENV ANSIBLE_COLLECTIONS_PATH=${ANSIBLE_COLLECTIONS_PATH}
-RUN cd ./ansible && ansible-galaxy collection install --no-deps -r ./requirements.yml
+RUN --mount-type=bind,source=./ansible/requirements.yml,target=./ansible/requirements.yml,Z \
+	--mount-type=cache,target=${ANSIBLE_COLLECTIONS_PATH} \
+	cd ./ansible && ansible-galaxy collection install --no-deps -r ./requirements.yml
 
 
 # ======================= Development =======================
