@@ -10,7 +10,7 @@ export default function transformFormData(formData: Record<string, any>) {
 	});
 
 	// Prefix all SSH keys with the path to directory containing them
-	const SSH_KEYS_PATH = '/etc/cloudymc/data/ssh';
+	const SSH_KEYS_PATH = '/etc/cloudymc/data/ssh_keys';
 	formDataCopy = deepSearchModify(formDataCopy, 'sshkey', (value) => {
 		return `${SSH_KEYS_PATH}/${value}`;
 	});
