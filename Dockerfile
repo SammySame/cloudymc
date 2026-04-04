@@ -7,7 +7,7 @@ ARG ROOT_PATH=/app
 ARG USER_DATA_PATH=/etc/cloudymc/data
 ARG PYTHON_VENV_PATH=/opt/venv
 ARG ANSIBLE_COLLECTIONS_PATH=/usr/share/ansible/collections
-ARG TF_PLUGIN_CACHE_PATH=/usr/share/terraform/plugin-cache
+ARG TF_PLUGIN_CACHE_PATH=/var/cache/terraform/plugin-cache
 
 # ======================= Base =======================
 FROM docker.io/library/python:3.13-slim-trixie AS base
