@@ -50,6 +50,7 @@ crash.*.log
 
 # Ansible
 group_vars/
+!group_vars/all.yml
 host_vars/
 .ansible/
 *.retry
