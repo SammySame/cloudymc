@@ -57,15 +57,15 @@ RUN apt-get update \
 	&& apt-get clean \
 	&& rm -rf /var/lib/apt/lists/*
 
-RUN wget -q https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip \
+RUN --mount=type=cache,target=/terraform.zip \
+	--mount=type=cache,target=/tflint.zip \
+	wget -q https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip \
 	-O terraform.zip \
 	&& unzip -q terraform.zip terraform -d /usr/local/bin \
-	&& rm -f terraform.zip \
 	&& chmod +x /usr/local/bin/terraform \
 	&& wget -q https://github.com/terraform-linters/tflint/releases/download/${TF_LINT_VERSION}/tflint_linux_amd64.zip \
 	-O tflint.zip \
 	&& unzip -q tflint.zip tflint -d /usr/local/bin \
-	&& rm -f tflint.zip \
 	&& chmod +x /usr/local/bin/tflint
 
 # Terraform copies from the cache into the .terraform directory, so the files are copied into the image itself
