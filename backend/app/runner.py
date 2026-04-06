@@ -22,7 +22,7 @@ def _run_process(func: Callable[[], Generator[str, Any]]):
 			yield event
 			break
 		else:
-			yield _error_event(str(event))
+			yield _error_event(str(data))
 			return
 
 
