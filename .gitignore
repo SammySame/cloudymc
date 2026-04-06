@@ -49,7 +49,7 @@ crash.*.log
 !defaults.auto.tfvars
 
 # Ansible
-group_vars/
+group_vars/*
 !group_vars/all.yml
 host_vars/
 .ansible/

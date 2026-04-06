@@ -1,0 +1,3 @@
+cloudymc_default_user: ubuntu # Hardcoded for now
+cloudymc_ansible_user: ansible
+cloudymc_ansible_group: ansible
