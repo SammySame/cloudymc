@@ -51,18 +51,18 @@ def run_pipeline(data: tuple[dict, bool, bool]):
 		yield f'data: {json.dumps({"stage": "terraform", "line": "Ansible won't be run due to missing/empty Terraform state file"})}\n\n'
 		return
 
-	public_ssh_key_contents: str = get_terraform_output('public_ssh_key_contents', TF_PATH)
-	if not public_ssh_key_contents:
-		yield _error_event('Empty Terraform output for: instance public SSH key contents')
-		return
-
 	ansible_inventory: str = get_terraform_output('ansible_inventory', TF_PATH)
 	if not ansible_inventory:
 		yield _error_event('Empty Terraform output for: Ansible inventory')
 		return
 
+	instance_ip: str = get_terraform_output('instance_address', TF_PATH)
+	if not instance_ip:
+		yield _error_event('Empty Terraform output for: Instance Address')
+		return
+
 	try:
-		add_known_hosts(public_ssh_key_contents)
+		add_known_hosts(instance_ip)
 	except Exception as e:
 		yield _error_event(str(e))
 		return
