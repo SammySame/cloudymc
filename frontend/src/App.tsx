@@ -70,7 +70,7 @@ export default function App() {
 
 	const handleSubmit = async ({ formData }: IChangeEvent<any>) => {
 		try {
-			const jobId = await submitForm(transformFormData(formData));
+			const jobId = await submitForm(transformFormData(formData), false);
 			await streamJob(
 				jobId,
 				(stage, line) => console.log(`[${stage}] ${line}`),
@@ -87,15 +87,19 @@ export default function App() {
 
 	const handleError = (errors: RJSFValidationError[]) => {
 		console.log('Validation error:', errors);
+		if (!errors?.length) return;
 
-		const errorField = document.querySelector<HTMLElement>('.rjsf-field-error');
-		if (!errorField) return;
+		const prop = errors[0].property;
+		if (!prop) return;
 
-		errorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+		const mod = prop.replace(/^\./, '').replace(/[.]/g, '_');
+		const id = `root_${mod}`;
+		const el = document.getElementById(id);
+		if (!el) return;
+
+		el.scrollIntoView({ behavior: 'smooth', block: 'center' });
 		setTimeout(() => {
-			const input = errorField.querySelector<HTMLElement>(
-				'input, select, textarea'
-			);
+			const input = el.querySelector<HTMLElement>('input, select, textarea');
 			input?.focus({ preventScroll: true });
 		}, 300);
 	};
