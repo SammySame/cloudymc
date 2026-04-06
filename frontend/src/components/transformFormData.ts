@@ -3,7 +3,9 @@ export default function transformFormData(formData: Record<string, any>) {
 
 	// Combine ports into singular array for Terraform
 	formDataCopy.dynamic = {};
-	formDataCopy.dynamic.combinedPorts = formDataCopy.minecraft.additionalPorts;
+	formDataCopy.dynamic.combinedPorts = structuredClone(
+		formDataCopy.minecraft.additionalPorts || []
+	);
 	formDataCopy.dynamic.combinedPorts.push({
 		number: formDataCopy.minecraft.serverPort,
 		protocol: 'TCP',
