@@ -9,5 +9,5 @@ insert_final_newline = true
 [.pre-commit-config.yaml]
 indent_style = space
 
-[*.{yml,yaml,ansible-lint}]
+[*.{yml,yaml,ansible-lint,yml.j2}]
 indent_style = space
