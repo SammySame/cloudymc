@@ -8,15 +8,16 @@ services:
     stop_grace_period: 60s
     ports:
       - {{ cloudymc_mc_port }}:25565
-    {% for port in cloudymc_mc_additional_ports %}
+{% for port in cloudymc_mc_additional_ports %}
       - {{port.number}}:{{port.number}}/{{port.protocol}}
-    {% endfor %}
+{% endfor %}
     environment:
       TYPE: VANILLA
       EULA: {{ cloudymc_mc_eula_accepted }}
       ONLINE_MODE: {{ cloudymc_mc_online_mode }}
       SERVER_NAME: {{ cloudymc_mc_name }}
-      MOTD: {{ cloudymc_mc_motd }}
+      MOTD: |-
+        {{ cloudymc_mc_motd | indent(8) }}
       ICON: {{ cloudymc_mc_icon }}
       OVERRIDE_ICON: {{ cloudymc_mc_override_icon }}
       MAX_PLAYERS: {{ cloudymc_mc_max_players }}
@@ -31,46 +32,46 @@ services:
       SIMULATION_DISTANCE: {{ cloudymc_mc_simulation_distance }}
       SPAWN_PROTECTION: {{ cloudymc_mc_spawn_protection }}
       ALLOW_FLIGHT: {{ cloudymc_mc_allow_flight }}
-      {% if cloudymc_mc_whitelist_users %}
+{% if cloudymc_mc_whitelist_users %}
       ENABLE_WHITELIST: true
       WHITELIST: |-
         {% for user in cloudymc_mc_whitelist_users %}
         {{ user }}
         {% endfor %}
-      {% else %}
+{% else %}
       ENABLE_WHITELIST: false
-      {% endif %}
-      {% if cloudymc_mc_ops %}
+{% endif %}
+{% if cloudymc_mc_ops %}
       OPS: |-
-        {% for op_user in cloudymc_mc_ops %}
+{% for op_user in cloudymc_mc_ops %}
         {{ op_user }}
-        {% endfor %}
-      {% endif %}
-      {% if cloudymc_mc_commands_startup %}
+{% endfor %}
+{% endif %}
+{% if cloudymc_mc_commands_startup %}
       RCON_CMDS_STARTUP: |-
-        {% for command in cloudymc_mc_commands_startup %}
+{% for command in cloudymc_mc_commands_startup %}
         {{ command }}
-        {% endfor %}
-      {% endif %}
-      {% if cloudymc_mc_commands_connect %}
+{% endfor %}
+{% endif %}
+{% if cloudymc_mc_commands_connect %}
       RCON_CMDS_ON_CONNECT: |-
-        {% for command in cloudymc_mc_commands_connect %}
+{% for command in cloudymc_mc_commands_connect %}
         {{ command }}
-        {% endfor %}
-      {% endif %}
-      {% if cloudymc_mc_commands_disconnect %}
+{% endfor %}
+{% endif %}
+{% if cloudymc_mc_commands_disconnect %}
       RCON_CMDS_ON_DISCONNECT: |-
-        {% for command in cloudymc_mc_commands_disconnect %}
+{% for command in cloudymc_mc_commands_disconnect %}
         {{ command }}
-        {% endfor %}
-      {% endif %}
+{% endfor %}
+{% endif %}
       MEMORY: {{ cloudymc_mc_memory_mb }}M
       SNOOPER_ENABLED: false
       ENABLE_RCON: true
       STOP_SERVER_ANNOUNCE_DELAY: 60
       ROLLING_LOG_MAX_FILES: 100
-      USE_MEOWICE_FLAGS: true
-      USE_MEOWICE_GRAALVM_FLAGS: false
+      USE_MEOWICE_FLAGS: false
+      USE_MEOWICE_GRAALVM_FLAGS: true
       UID: {{ mc_user_output.uid }}
       GID: {{ mc_user_output.group }}
       TZ: {{ cloudymc_system_timezone }}
