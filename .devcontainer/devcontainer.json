@@ -44,6 +44,5 @@
 			]
 		}
 	},
-	"securityOpt": ["no-new-privileges:true"],
-	"runArgs": ["--cap-drop=ALL"]
+	"securityOpt": ["no-new-privileges:true"]
 }
