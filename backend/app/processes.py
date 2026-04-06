@@ -38,16 +38,12 @@ def get_terraform_state(cwd: str = '.'):
 
 
 def run_ansible(variables: dict, inventory: str, cwd: str = '.', dry_run=True):
+	args = ['ansible-playbook', '-i', '/dev/stdin', '-e', json.dumps(variables), 'site.yml']
+	if dry_run:
+		args.append('--check')
+
 	process = subprocess.Popen(
-		[
-			'ansible-playbook',
-			'-i',
-			'/dev/stdin',
-			'-e',
-			json.dumps(variables),
-			'site.yml',
-			'--check' if dry_run else '',
-		],
+		args=args,
 		cwd=cwd,
 		stdin=subprocess.PIPE,
 		stdout=subprocess.PIPE,
