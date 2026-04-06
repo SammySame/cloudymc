@@ -16,7 +16,6 @@ ARG PGID
 ARG USERNAME
 ARG ROOT_PATH
 ARG USER_DATA_PATH
-ARG ANSIBLE_COLLECTIONS_PATH
 ARG TF_PLUGIN_CACHE_PATH
 
 LABEL org.opencontainers.image.title="cloudymc"
@@ -35,7 +34,7 @@ RUN groupadd -g ${PGID} ${USERNAME} \
 	&& useradd -u ${PUID} -g ${PGID} -m -s /bin/bash ${USERNAME}
 
 WORKDIR ${ROOT_PATH}
-RUN mkdir -p ${ANSIBLE_COLLECTIONS_PATH} ${TF_PLUGIN_CACHE_PATH} ${USER_DATA_PATH} \
+RUN mkdir -p ${USER_DATA_PATH} \
 	&& chown ${USERNAME}:${USERNAME} ${USER_DATA_PATH}
 
 COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
@@ -68,16 +67,19 @@ RUN --mount=type=cache,target=/terraform.zip \
 	&& unzip -q tflint.zip tflint -d /usr/local/bin \
 	&& chmod +x /usr/local/bin/tflint
 
-# Terraform copies from the cache into the .terraform directory, so the files are copied into the image itself
+# Terraform copies files from the cache into local .terraform directory
+# so it needs to be baked into the image itself
 RUN --mount=type=cache,target=/tmp/tf-cache \
 	--mount=type=bind,target=./terraform,Z \
-	cp -rn /tmp/tf-cache/. ${TF_PLUGIN_CACHE_PATH}/ 2>/dev/null || true \
+	mkdir -p ${TF_PLUGIN_CACHE_PATH} \
+	&& cp -rn /tmp/tf-cache/. ${TF_PLUGIN_CACHE_PATH}/ 2>/dev/null || true \
 	&& cd ./terraform && terraform init -input=false \
 	&& cp -rn ${TF_PLUGIN_CACHE_PATH}/. /tmp/tf-cache/ 2>/dev/null || true
 
 
 # ======================= Python =======================
 FROM base as python
+ARG USERNAME
 ARG PYTHON_VENV_PATH
 
 ENV PYTHON_VENV_PATH=${PYTHON_VENV_PATH} \
@@ -85,7 +87,8 @@ ENV PYTHON_VENV_PATH=${PYTHON_VENV_PATH} \
 RUN --mount=type=bind,source=./backend/requirements/common.txt,target=./backend/requirements/common.txt \
 	--mount=type=cache,target=/root/.cache/pip \
 	python3 -m venv ${PYTHON_VENV_PATH} \
-	&& pip install -r ./backend/requirements/common.txt
+	&& pip install -r ./backend/requirements/common.txt \
+	&& chown ${USERNAME}:${USERNAME} ${PYTHON_VENV_PATH}
 
 
 # ======================= Ansible =======================
@@ -173,6 +176,6 @@ RUN chown -R ${USERNAME}:${USERNAME} ./
 USER ${USERNAME}
 EXPOSE 8000
 VOLUME ${USER_DATA_PATH}
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 WORKDIR ${ROOT_PATH}/backend
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["gunicorn", "-w", "1", "-k", "gthread", "--threads", "2", "-b", "0:8000", "app:app"]
