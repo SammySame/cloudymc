@@ -73,7 +73,7 @@ services:
       USE_MEOWICE_GRAALVM_FLAGS: false
       UID: {{ mc_user_output.uid }}
       GID: {{ mc_user_output.group }}
-      TZ: {{ system_timezone }}
+      TZ: {{ cloudymc_system_timezone }}
     volumes:
       - ./data:/data
     security_opt:

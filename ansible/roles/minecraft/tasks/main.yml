@@ -4,7 +4,7 @@
 - name: create minecraft server root directory
   become: true
   ansible.builtin.file:
-    name: "{{ cloudymc_mc_server_root_path }}"
+    name: "{{ cloudymc_mc_root_path }}"
     state: directory
     owner: "{{ cloudymc_mc_admin_user }}"
     group: "{{ cloudymc_mc_admin_group }}"
@@ -13,7 +13,7 @@
 - name: create minecraft server data directory
   become: true
   ansible.builtin.file:
-    name: "{{ cloudymc_mc_server_data_path }}"
+    name: "{{ cloudymc_mc_data_path }}"
     state: directory
     owner: "{{ cloudymc_mc_runner_user }}"
     group: "{{ cloudymc_mc_admin_group }}"
@@ -23,7 +23,7 @@
   become: true
   ansible.posix.mount:
     path: /home/{{ cloudymc_mc_admin_user }}/minecraft-server
-    src: "{{ cloudymc_mc_server_data_path }}"
+    src: "{{ cloudymc_mc_data_path }}"
     opts: bind
     fstype: none
     state: mounted
@@ -32,7 +32,7 @@
   run_once: true
   delegate_to: localhost
   ansible.builtin.stat:
-    path: "{{ cloudymc_mc_server_compose_file }}"
+    path: "{{ cloudymc_mc_compose_file }}"
     get_checksum: false
     get_mime: false
     get_attributes: false
@@ -41,8 +41,8 @@
 - name: import custom docker compose file
   become: true
   ansible.builtin.copy:
-    src: "{{ cloudymc_mc_server_compose_file }}"
-    dest: "{{ cloudymc_mc_server_root_path }}/compose.yml"
+    src: "{{ cloudymc_mc_compose_file }}"
+    dest: "{{ cloudymc_mc_root_path }}/compose.yml"
     owner: root
     group: root
     mode: "0664"
@@ -55,7 +55,7 @@
   become: true
   ansible.builtin.template:
     src: compose.yml.j2
-    dest: "{{ cloudymc_mc_server_root_path }}/compose.yml"
+    dest: "{{ cloudymc_mc_root_path }}/compose.yml"
     owner: root
     group: root
     mode: "0664"
@@ -77,12 +77,12 @@
   ansible.builtin.assert:
     fail_msg: "Minecraft EULA has not been accepted. The server cannot be started."
     success_msg: ""
-    that: "cloudymc_mc_server_eula_accepted|string|lower == 'true'"
+    that: "cloudymc_mc_eula_accepted|string|lower == 'true'"
 
 - name: create and start minecraft server
   become: true
   community.docker.docker_compose_v2:
-    project_src: "{{ cloudymc_mc_server_root_path }}"
+    project_src: "{{ cloudymc_mc_root_path }}"
     build: never
     state: present
   register: docker_output
