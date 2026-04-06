@@ -15,6 +15,7 @@
 	"mounts": [
 		"source=${localWorkspaceFolderBasename}-node_modules,target=${containerWorkspaceFolder}/frontend/node_modules,type=volume,Z"
 	],
+	"onCreateCommand": "/usr/local/bin/entrypoint.sh",
 	"postCreateCommand": "pre-commit install && cd ./terraform && terraform init -input=false",
 	"forwardPorts": [5173, 5000],
 	"portsAttributes": {
