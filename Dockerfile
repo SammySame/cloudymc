@@ -93,12 +93,19 @@ RUN --mount=type=bind,source=./backend/requirements/common.txt,target=./backend/
 
 # ======================= Ansible =======================
 FROM python as ansible
+ARG USERNAME
 ARG ANSIBLE_COLLECTIONS_PATH
 
+# Ansible sources files from the collections directory
+# so it needs to be baked into the image itself
 ENV ANSIBLE_COLLECTIONS_PATH=${ANSIBLE_COLLECTIONS_PATH}
 RUN --mount=type=bind,source=./ansible/requirements.yml,target=./ansible/requirements.yml,Z \
-	--mount=type=cache,target=${ANSIBLE_COLLECTIONS_PATH} \
-	cd ./ansible && ansible-galaxy collection install --no-deps -r ./requirements.yml
+	--mount=type=cache,target=/tmp/ansible \
+	mkdir -p ${ANSIBLE_COLLECTIONS_PATH} \
+	cp -rn /tmp/ansible/. ${ANSIBLE_COLLECTIONS_PATH}/ 2>/dev/null || true \
+	&& cd ./ansible && ansible-galaxy collection install --no-deps -r ./requirements.yml \
+	&& cp -rn ${ANSIBLE_COLLECTIONS_PATH}/. /tmp/ansible/ 2>/dev/null || true \
+	&& chown -R ${USERNAME}:${USERNAME} ${ANSIBLE_COLLECTIONS_PATH}
 
 
 # ======================= Development =======================
