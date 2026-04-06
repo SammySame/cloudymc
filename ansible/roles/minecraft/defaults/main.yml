@@ -26,7 +26,6 @@ cloudymc_mc_commands_connect: []
 cloudymc_mc_commands_disconnect: []
 
 cloudymc_mc_compose_file:
-cloudymc_mc_sftp_public_key_file:
 cloudymc_mc_root_path: /opt/minecraft-server
 cloudymc_mc_data_path: "{{ cloudymc_mc_root_path }}/data"
 cloudymc_mc_memory_mb: "{{ ansible_facts['memtotal_mb'] - 2048 }}"
@@ -40,3 +39,4 @@ cloudymc_mc_runner_uid: 1201
 
 cloudymc_sftp_group: sftpusers
 cloudymc_system_timezone: Etc/UTC
+cloudymc_sftp_public_key_file:

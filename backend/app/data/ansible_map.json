@@ -1,5 +1,6 @@
 {
 	"defaultSshKey": "cloudymc_ansible_ssh_public_key_file",
+	"sftpSshKey": "cloudymc_sftp_public_key_file",
 	"timezone": "cloudymc_system_timezone",
 	"minecraft.serverPort": "cloudymc_mc_port",
 	"minecraft.additionalPorts": "cloudymc_mc_additional_ports",
