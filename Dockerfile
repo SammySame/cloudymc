@@ -6,7 +6,7 @@ ARG ROOT_PATH=/app
 # Changing USER_DATA_PATH will break things
 ARG USER_DATA_PATH=/etc/cloudymc/data
 ARG PYTHON_VENV_PATH=/opt/venv
-ARG ANSIBLE_COLLECTIONS_PATH=/usr/share/ansible/collections
+ARG ANSIBLE_COLLECTIONS_PATH=/usr/share/ansible
 ARG TF_PLUGIN_CACHE_PATH=/var/cache/terraform/plugin-cache
 
 # ======================= Base =======================
