@@ -39,7 +39,7 @@
   become: true
   ansible.posix.authorized_key:
     user: "{{ cloudymc_ansible_user }}"
-    key: "{{ lookup('ansible.builtin.file', ansible_ssh_public_key_file) }}"
+    key: "{{ lookup('ansible.builtin.file', cloudymc_ansible_ssh_public_key_file) }}"
     manage_dir: true
     exclusive: true
     state: present

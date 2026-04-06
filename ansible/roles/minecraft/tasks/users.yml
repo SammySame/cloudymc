@@ -21,7 +21,7 @@
   ansible.builtin.user:
     name: "{{ cloudymc_mc_admin_user }}"
     group: "{{ cloudymc_mc_admin_group }}"
-    groups: "{{ sftp_group }}"
+    groups: "{{ cloudymc_sftp_group }}"
     uid: "{{ cloudymc_mc_admin_uid }}"
     shell: /sbin/nologin
     create_home: true
