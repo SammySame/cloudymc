@@ -1,10 +1,12 @@
 import os.path
 import threading
 import uuid
+from typing import Any
 
 from flask import Blueprint, Response, jsonify, request, stream_with_context
 
-from app.config import CONFIG_FILE_NAME
+from app.config import CONFIG_FILE_NAME, TF_PATH
+from app.processes import get_terraform_output
 from app.runner import run_pipeline
 from app.utils.job_manager import job_manager
 from app.utils.json_helpers import load_json, save_json
@@ -18,6 +20,30 @@ static_bp = Blueprint('static', __name__, static_folder='static', static_url_pat
 def index():
 	assert static_bp.static_folder is not None
 	return static_bp.send_static_file('index.html')
+
+
+@api_bp.route('/terraform/instance/address', methods=['GET'])
+def get_instance():
+	try:
+		instance_ip = get_terraform_output('instance_address', TF_PATH)
+	except Exception as e:
+		return jsonify({'message': str(e)}), 500
+	if not instance_ip:
+		return jsonify({'message': 'Could not get cloud instance IP address'}), 404
+	return jsonify(
+		{'message': f'Cloud instance IP address is: {instance_ip}', 'data': instance_ip}
+	), 200
+
+
+@api_bp.route('/terraform/instance/running', methods=['GET'])
+def is_instance_running():
+	try:
+		is_running = get_terraform_output('instance_address', TF_PATH)
+	except Exception as e:
+		return jsonify({'message': str(e)}), 500
+	if is_running is None:
+		return jsonify({'message': 'Could not check instance status'}), 404
+	return jsonify({'message': 'Cloud instance is running', 'data': is_running}), 200
 
 
 @api_bp.route('/forms/save', methods=['POST'])
@@ -84,3 +110,10 @@ def stream_job(job_id: str):
 			job_manager.remove(job_id)
 
 	return Response(stream_with_context(_generate()), mimetype='text/event-stream')
+
+
+def _format_response(msg: str, data: Any | None = None):
+	response = {'message': msg}
+	if data:
+		response['data'] = data
+	return response
