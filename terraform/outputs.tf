@@ -13,7 +13,12 @@ output "instance_address" {
 }
 
 output "ansible_inventory" {
-  description = "Inventory file used by Ansible"
+  description = "Inventory file used by Ansible."
   value       = local.ansible_inv
   sensitive   = true
+}
+
+output "is_instance_running" {
+  description = "Checks and returns if instance is running."
+  value       = data.oci_core_instance.this.state == "RUNNING"
 }

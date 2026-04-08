@@ -40,3 +40,7 @@ data "oci_core_boot_volumes" "this" {
   for_each       = local.compartments
   compartment_id = each.key
 }
+
+data "oci_core_instance" "this" {
+  instance_id = module.instance.instance_id
+}
