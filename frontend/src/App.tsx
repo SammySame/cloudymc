@@ -1,14 +1,8 @@
 import { useState, useEffect, useContext } from 'react';
 import { PrimeReactContext } from 'primereact/api';
-import { IChangeEvent } from '@rjsf/core';
 import { Form } from '@rjsf/primereact';
 import validator from '@rjsf/validator-ajv8';
-import {
-	RJSFSchema,
-	UiSchema,
-	CustomValidator,
-	RJSFValidationError,
-} from '@rjsf/utils';
+import { RJSFSchema, UiSchema, CustomValidator } from '@rjsf/utils';
 import 'primeicons/primeicons.css';
 import schemaFile from './assets/bundled.schema.json';
 import uiSchemaFile from './assets/schemas/main.uischema.json';
@@ -18,14 +12,9 @@ import {
 	ArrayFieldTitleTemplate,
 	FieldErrorTemplate,
 } from './components/FormTemplates';
-import {
-	getBackend,
-	postBackend,
-	submitForm,
-	streamJob,
-} from './components/requests';
-import transformFormData from './components/transformFormData';
+import { getBackend } from './components/requests';
 import InstanceStatus from './components/InstanceStatus';
+import { handleSubmit, handleError } from './components/formHandlers';
 
 export default function App() {
 	const [schema, setSchema] = useState<RJSFSchema>(schemaFile as RJSFSchema);
@@ -75,52 +64,6 @@ export default function App() {
 		);
 	}
 
-	const handleSubmit = async ({ formData }: IChangeEvent<any>) => {
-		if (isRunning) {
-			const input = prompt(
-				'Any changes can result in cloud instance data loss.\n' +
-					'Make sure to backup important data if neccessary.\n\n' +
-					'Please type "yes" if you wish to continue'
-			);
-			if (input != 'yes') {
-				console.log('Submit cancelled');
-				return;
-			}
-		}
-		try {
-			const jobId = await submitForm(transformFormData(formData), false, false);
-			const success = await streamJob(jobId);
-			if (!success) {
-				console.error(
-					'Process failed. Check the logs for the potential source of the issue'
-				);
-				return;
-			}
-			await postBackend(formData, '/api/forms/save');
-		} catch (error) {
-			console.error(`Failed to submit form data: ${error}`);
-		}
-	};
-
-	const handleError = (errors: RJSFValidationError[]) => {
-		console.log('Validation error:', errors);
-		if (!errors?.length) return;
-
-		const prop = errors[0].property;
-		if (!prop) return;
-
-		const mod = prop.replace(/^\./, '').replace(/[.]/g, '_');
-		const id = `root_${mod}`;
-		const el = document.getElementById(id);
-		if (!el) return;
-
-		el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-		setTimeout(() => {
-			const input = el.querySelector<HTMLElement>('input, select, textarea');
-			input?.focus({ preventScroll: true });
-		}, 300);
-	};
-
 	// Since defaulting boolean to false while requiring it to be true
 	// which would force the user to set it explicitly to true is impossible
 	// in RJSF, the value is checked here instead
@@ -144,7 +87,7 @@ export default function App() {
 				uiSchema={uiSchema}
 				validator={validator}
 				templates={{ ArrayFieldTitleTemplate, FieldErrorTemplate }}
-				onSubmit={handleSubmit}
+				onSubmit={(data, _event) => handleSubmit(data, isRunning)}
 				onError={handleError}
 				formData={formData}
 				showErrorList={false}
