@@ -69,24 +69,30 @@ export default function App() {
 	}
 
 	const handleSubmit = async ({ formData }: IChangeEvent<any>) => {
-		if (confirm())
-			try {
-				const jobId = await submitForm(
-					transformFormData(formData),
-					false,
-					false
+		const isInstanceRunning: boolean = await getBackend(
+			'/api/terraform/instance/running'
+		);
+		if (isInstanceRunning) {
+			if (
+				!confirm(
+					'Any made changes can result in cloud instance data loss. Make sure to backup important data if neccessary'
+				)
+			)
+				return;
+		}
+		try {
+			const jobId = await submitForm(transformFormData(formData), false, false);
+			const success = await streamJob(jobId);
+			if (!success) {
+				console.error(
+					'Process failed. Check the logs for the potential source of the issue'
 				);
-				const success = await streamJob(jobId);
-				if (!success) {
-					console.error(
-						'Process failed. Check the logs for the potential source of the issue'
-					);
-					return;
-				}
-				await postBackend(formData, '/api/forms/save');
-			} catch (error) {
-				console.error(`Failed to submit form data: ${error}`);
+				return;
 			}
+			await postBackend(formData, '/api/forms/save');
+		} catch (error) {
+			console.error(`Failed to submit form data: ${error}`);
+		}
 	};
 
 	const handleError = (errors: RJSFValidationError[]) => {
