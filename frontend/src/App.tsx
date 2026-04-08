@@ -25,6 +25,7 @@ import {
 	streamJob,
 } from './components/requests';
 import transformFormData from './components/transformFormData';
+import InstanceStatus from './components/InstanceStatus';
 
 export default function App() {
 	const [schema, setSchema] = useState<RJSFSchema>(schemaFile as RJSFSchema);
@@ -32,12 +33,18 @@ export default function App() {
 	const [formData, setFormData] = useState<any>(null);
 	const { changeTheme } = useContext(PrimeReactContext);
 	const { isDark, toggle } = useTheme();
+	const [instanceAddress, setInstanceAddress] = useState<string>('');
+	const [isRunning, setIsRunning] = useState(false);
 
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
 				const data = await getBackend('/api/forms/load');
 				if (data) setFormData(data);
+				const instance_ip = await getBackend('/api/instance/address');
+				if (instance_ip) setInstanceAddress(instance_ip);
+				const instance_status = await getBackend('/api/instance/running');
+				if (instance_status !== null) setIsRunning(instance_status);
 			} catch (error) {
 				console.error('Failed to load saved form data:', error);
 			}
@@ -69,10 +76,7 @@ export default function App() {
 	}
 
 	const handleSubmit = async ({ formData }: IChangeEvent<any>) => {
-		const isInstanceRunning: boolean = await getBackend(
-			'/api/terraform/instance/running'
-		);
-		if (isInstanceRunning) {
+		if (isRunning) {
 			const input = prompt(
 				'Any changes can result in cloud instance data loss.\n' +
 					'Make sure to backup important data if neccessary.\n\n' +
@@ -146,6 +150,7 @@ export default function App() {
 				showErrorList={false}
 				customValidate={customValidate}
 			/>
+			<InstanceStatus address={instanceAddress} isRunning={isRunning} />
 		</div>
 	);
 }
