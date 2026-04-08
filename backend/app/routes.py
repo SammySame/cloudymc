@@ -52,7 +52,9 @@ def save_config():
 	try:
 		user_data_path = load_environment_variable('USER_DATA_PATH')
 		save_json(config, os.path.join(user_data_path, CONFIG_FILE_NAME))
-		return jsonify({'message': f'File saved successfully: {user_data_path}'}), 200
+		return jsonify(
+			{'message': f'File saved successfully: {user_data_path}/{CONFIG_FILE_NAME}'}
+		), 200
 	except Exception as e:
 		return jsonify({'message': str(e)}), 500
 
@@ -62,7 +64,12 @@ def load_config():
 	try:
 		user_data_path = load_environment_variable('USER_DATA_PATH')
 		config = load_json(os.path.join(user_data_path, CONFIG_FILE_NAME))
-		return jsonify({'message': 'File loaded successfully', 'data': config})
+		return jsonify(
+			{
+				'message': f'File loaded successfully: {user_data_path}/${CONFIG_FILE_NAME}',
+				'data': config,
+			}
+		)
 	except FileNotFoundError as e:
 		return jsonify({'message': str(e)}), 404
 	except Exception as e:
