@@ -73,12 +73,15 @@ export default function App() {
 			'/api/terraform/instance/running'
 		);
 		if (isInstanceRunning) {
-			if (
-				!confirm(
-					'Any made changes can result in cloud instance data loss. Make sure to backup important data if neccessary'
-				)
-			)
+			const input = prompt(
+				'Any changes can result in cloud instance data loss.\n' +
+					'Make sure to backup important data if neccessary.\n\n' +
+					'Please type "yes" if you wish to continue'
+			);
+			if (input != 'yes') {
+				console.log('Submit cancelled');
 				return;
+			}
 		}
 		try {
 			const jobId = await submitForm(transformFormData(formData), false, false);
