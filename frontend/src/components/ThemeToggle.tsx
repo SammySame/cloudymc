@@ -1,9 +1,9 @@
 import { Button } from 'primereact/button';
 
-interface ThemeToggleProps {
+type ThemeToggleProps = {
 	isDark: boolean;
 	toggle: () => void;
-}
+};
 
 export default function ThemeToggle({ isDark, toggle }: ThemeToggleProps) {
 	return (
