@@ -56,18 +56,18 @@ async function streamJob(jobId: string) {
 	return success;
 }
 
-async function saveForm(formData: any) {
-	const response = await getResponse('/api/forms/save', {
+async function postBackend(data: any, path: string) {
+	const response = await getResponse(path, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify(formData),
+		body: JSON.stringify(data),
 	});
 	const { message } = await response!.json();
 	console.log(message);
 }
 
-async function loadForm() {
-	const response = await getResponse(`/api/forms/load`, {
+async function getBackend(path: string) {
+	const response = await getResponse(path, {
 		method: 'GET',
 		headers: { Accept: 'application/json' },
 	});
@@ -114,4 +114,4 @@ async function getResponse(
 	}
 }
 
-export { submitForm, saveForm, loadForm, streamJob };
+export { submitForm, postBackend, getBackend, streamJob };

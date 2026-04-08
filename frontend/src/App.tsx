@@ -19,8 +19,8 @@ import {
 	FieldErrorTemplate,
 } from './components/FormTemplates';
 import {
-	saveForm,
-	loadForm,
+	getBackend,
+	postBackend,
 	submitForm,
 	streamJob,
 } from './components/requests';
@@ -36,10 +36,10 @@ export default function App() {
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
-				const data = await loadForm();
+				const data = await getBackend('/api/forms/load');
 				if (data) setFormData(data);
 			} catch (error) {
-				console.error('Failed to load user form data:', error);
+				console.error('Failed to load saved form data:', error);
 			}
 		};
 		fetchData();
@@ -69,19 +69,24 @@ export default function App() {
 	}
 
 	const handleSubmit = async ({ formData }: IChangeEvent<any>) => {
-		try {
-			const jobId = await submitForm(transformFormData(formData), false, false);
-			const success = await streamJob(jobId);
-			if (!success) {
-				console.error(
-					'Process failed. Check the logs for the potential source of the issue'
+		if (confirm())
+			try {
+				const jobId = await submitForm(
+					transformFormData(formData),
+					false,
+					false
 				);
-				return;
+				const success = await streamJob(jobId);
+				if (!success) {
+					console.error(
+						'Process failed. Check the logs for the potential source of the issue'
+					);
+					return;
+				}
+				await postBackend(formData, '/api/forms/save');
+			} catch (error) {
+				console.error(`Failed to submit form data: ${error}`);
 			}
-			await saveForm(formData);
-		} catch (error) {
-			console.error(`Failed to submit user form data: ${error}`);
-		}
 	};
 
 	const handleError = (errors: RJSFValidationError[]) => {
