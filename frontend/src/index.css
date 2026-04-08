@@ -40,3 +40,8 @@
 .rjsf-field-boolean.rjsf-field-error .p-checkbox-box {
 	border-color: rgb(226, 76, 76);
 }
+
+#instance-status {
+	font-size: var(--font-size);
+	padding: 0.75rem 1.25rem;
+}

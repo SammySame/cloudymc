@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
 import { PrimeReactContext } from 'primereact/api';
 import { Form } from '@rjsf/primereact';
+import { Button } from 'primereact/button';
 import validator from '@rjsf/validator-ajv8';
 import { RJSFSchema, UiSchema, CustomValidator } from '@rjsf/utils';
 import 'primeicons/primeicons.css';
@@ -92,8 +93,24 @@ export default function App() {
 				formData={formData}
 				showErrorList={false}
 				customValidate={customValidate}
-			/>
-			<InstanceStatus address={instanceAddress} isRunning={isRunning} />
+			>
+				<div
+					style={{
+						padding: '2em',
+						display: 'flex',
+						justifyContent: 'space-around',
+						alignItems: 'center',
+					}}
+				>
+					<Button type="submit">Apply</Button>
+					<InstanceStatus
+						id="instance-status"
+						address={instanceAddress}
+						isRunning={isRunning}
+					/>
+					<Button type="button">Test</Button>
+				</div>
+			</Form>
 		</div>
 	);
 }
