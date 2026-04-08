@@ -1,6 +1,6 @@
-import { Tag } from 'primereact/tag';
+import { Tag, TagProps } from 'primereact/tag';
 
-type InstanceStatusProps = {
+type InstanceStatusProps = TagProps & {
 	address: string;
 	isRunning: boolean;
 };
@@ -8,12 +8,14 @@ type InstanceStatusProps = {
 export default function InstanceStatus({
 	address,
 	isRunning,
+	...props
 }: InstanceStatusProps) {
 	return (
 		<Tag
 			severity={isRunning ? 'success' : 'danger'}
 			icon={isRunning ? 'pi pi-check-circle' : 'pi pi-times-circle'}
 			value={`(${isRunning ? 'Online' : 'Offline'}) ${address ? address : 'Unknown'}`}
+			{...props}
 		/>
 	);
 }
