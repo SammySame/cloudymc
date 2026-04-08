@@ -70,15 +70,14 @@ export default function App() {
 
 	const handleSubmit = async ({ formData }: IChangeEvent<any>) => {
 		try {
-			const jobId = await submitForm(transformFormData(formData), false);
-			await streamJob(
-				jobId,
-				(stage, line) => console.log(`[${stage}] ${line}`),
-				(stage, code) => console.log(`[${stage}] Finished with code: ${code}`),
-				(msg) => {
-					throw new Error(msg);
-				}
-			);
+			const jobId = await submitForm(transformFormData(formData), false, false);
+			const success = await streamJob(jobId);
+			if (!success) {
+				console.error(
+					'Process failed. Check the logs for the potential source of the issue'
+				);
+				return;
+			}
 			await saveForm(formData);
 		} catch (error) {
 			console.error(`Failed to submit user form data: ${error}`);

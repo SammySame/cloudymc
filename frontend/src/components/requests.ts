@@ -11,17 +11,14 @@ async function submitForm(
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify([formData, tfDryRun, ansibleDryRun]),
 	});
-	const { jobId } = await response!.json();
-	sessionStorage.setItem('jobId', jobId);
-	return jobId;
+	const { message, data } = await response!.json();
+
+	console.log(message);
+	sessionStorage.setItem('jobId', data);
+	return data;
 }
 
-async function streamJob(
-	jobId: string,
-	onLine: (stage: string, line: string) => void,
-	onDone: (stage: string, returnCode: number) => void,
-	onError: (message: string) => void
-) {
+async function streamJob(jobId: string) {
 	const response = await getResponse(`/api/forms/stream/${jobId}`, {
 		method: 'GET',
 	});
@@ -29,6 +26,7 @@ async function streamJob(
 	const reader = response!.body!.getReader();
 	const decoder = new TextDecoder();
 	let buffer = '';
+	let success = true;
 
 	try {
 		while (true) {
@@ -47,26 +45,25 @@ async function streamJob(
 					console.warn('Failed to parse SSE line:', line);
 					continue;
 				}
-
-				if (data.error) onError(data.error);
-				else if (data.debug) console.log(data.debug);
-				else if (data.done) onDone(data.stage, data.returnCode);
-				else onLine(data.stage, data.line);
+				if (!data.ok) success = false;
+				console.log(data.message);
 			}
 		}
 	} finally {
 		reader.releaseLock();
 		sessionStorage.removeItem('jobId');
 	}
+	return success;
 }
 
 async function saveForm(formData: any) {
-	await getResponse('/api/forms/save', {
+	const response = await getResponse('/api/forms/save', {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify(formData),
 	});
-	console.log('User configuration saved successfully');
+	const { message } = await response!.json();
+	console.log(message);
 }
 
 async function loadForm() {
@@ -74,7 +71,10 @@ async function loadForm() {
 		method: 'GET',
 		headers: { Accept: 'application/json' },
 	});
-	return await response!.json();
+	const { message, data } = await response!.json();
+
+	console.log(message);
+	return data;
 }
 
 async function getResponse(
@@ -110,7 +110,7 @@ async function getResponse(
 		}
 
 		const body = await response.json().catch(() => null);
-		throw new Error(body?.error ?? `HTTP error: ${response.status}`);
+		throw new Error(body?.message ?? `HTTP error: ${response.status}`);
 	}
 }
 

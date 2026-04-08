@@ -26,30 +26,31 @@ def save_config():
 	try:
 		user_data_path = load_environment_variable('USER_DATA_PATH')
 		save_json(config, os.path.join(user_data_path, CONFIG_FILE_NAME))
-		return {}, 200
+		return jsonify({'message': f'File saved successfully: {user_data_path}'}), 200
 	except Exception as e:
-		return jsonify({'error': str(e)}), 500
+		return jsonify({'message': str(e)}), 500
 
 
 @api_bp.route('/forms/load', methods=['GET'])
 def load_config():
 	try:
 		user_data_path = load_environment_variable('USER_DATA_PATH')
-		return load_json(os.path.join(user_data_path, CONFIG_FILE_NAME))
+		config = load_json(os.path.join(user_data_path, CONFIG_FILE_NAME))
+		return jsonify({'message': 'File loaded successfully', 'data': config})
 	except FileNotFoundError as e:
-		return jsonify({'error': str(e)}), 404
+		return jsonify({'message': str(e)}), 404
 	except Exception as e:
-		return jsonify({'error': str(e)}), 500
+		return jsonify({'message': str(e)}), 500
 
 
 @api_bp.route('/forms/submit', methods=['POST'])
 def apply_config():
 	body: tuple[dict, bool, bool] = request.get_json(force=True)
 	if body is None:
-		return jsonify({'error': 'Invalid or missing JSON body'}), 400
+		return jsonify({'message': 'Invalid or missing JSON body'}), 400
 
 	if not job_manager.acquire():
-		return jsonify({'error': 'Previous request is already being processed'}), 409
+		return jsonify({'message': 'Previous request is already being processed'}), 409
 
 	job_id = str(uuid.uuid4())
 	q = job_manager.create(job_id)
@@ -63,14 +64,14 @@ def apply_config():
 			job_manager.release()
 
 	threading.Thread(target=_run_thread, daemon=True).start()
-	return jsonify({'jobId': job_id}), 200
+	return jsonify({'message': 'Initial process started...', 'data': job_id}), 200
 
 
 @api_bp.route('/forms/stream/<job_id>', methods=['GET'])
 def stream_job(job_id: str):
 	q = job_manager.get(job_id)
 	if q is None:
-		return jsonify({'error': 'Unknown job ID'}), 404
+		return jsonify({'message': 'Unknown job ID'}), 404
 
 	def _generate():
 		try:

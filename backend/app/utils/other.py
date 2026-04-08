@@ -1,5 +1,10 @@
+import json
 import os
 import subprocess
+
+
+def stream_event(msg: str):
+	return f'data: {json.dumps(msg)}\n\n'
 
 
 def load_environment_variable(name: str):
