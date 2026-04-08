@@ -22,7 +22,7 @@ def index():
 	return static_bp.send_static_file('index.html')
 
 
-@api_bp.route('/terraform/instance/address', methods=['GET'])
+@api_bp.route('/instance/address', methods=['GET'])
 def get_instance():
 	try:
 		instance_ip = get_terraform_output('instance_address', TF_PATH)
@@ -35,7 +35,7 @@ def get_instance():
 	), 200
 
 
-@api_bp.route('/terraform/instance/running', methods=['GET'])
+@api_bp.route('/instance/running', methods=['GET'])
 def is_instance_running():
 	try:
 		is_running = get_terraform_output('instance_address', TF_PATH)
