@@ -1,6 +1,7 @@
 import os.path
 import threading
 import uuid
+from collections.abc import Callable
 from typing import Any
 
 from flask import Blueprint, Response, jsonify, request, stream_with_context
@@ -80,22 +81,9 @@ def apply_config():
 	body: tuple[dict, bool, bool] = request.get_json(force=True)
 	if body is None:
 		return jsonify(_format_response('Invalid or missing JSON body')), 400
-
 	if not job_manager.acquire():
 		return jsonify(_format_response('Previous request is already being processed')), 409
-
-	job_id = str(uuid.uuid4())
-	q = job_manager.create(job_id)
-
-	def _run_thread():
-		try:
-			for event in run_pipeline(body):
-				q.put(event)
-		finally:
-			q.put(None)
-			job_manager.release()
-
-	threading.Thread(target=_run_thread, daemon=True).start()
+	job_id = _run_thread(lambda: run_pipeline(body))
 	return jsonify(_format_response('Initial process started...', job_id)), 200
 
 
@@ -123,3 +111,19 @@ def _format_response(msg: str, data: Any | None = None):
 	if data:
 		response['data'] = data
 	return response
+
+
+def _run_thread(func: Callable):
+	job_id = str(uuid.uuid4())
+	q = job_manager.create(job_id)
+
+	def _run_thread():
+		try:
+			for event in func():
+				q.put(event)
+		finally:
+			q.put(None)
+			job_manager.release()
+
+	threading.Thread(target=_run_thread, daemon=True).start()
+	return job_id
