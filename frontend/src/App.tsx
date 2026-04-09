@@ -35,12 +35,16 @@ export default function App() {
 			try {
 				const data = await getBackend('/api/forms/load');
 				if (data) setFormData(data);
+			} catch (error) {
+				console.error('Failed to load saved form data:', error);
+			}
+			try {
 				const instance_ip = await getBackend('/api/instance/address');
 				if (instance_ip) setInstanceAddress(instance_ip);
 				const instance_status = await getBackend('/api/instance/running');
 				if (instance_status !== null) setIsRunning(instance_status);
 			} catch (error) {
-				console.error('Failed to load saved form data:', error);
+				console.warn('Failed to retrieve cloud instance status:', error);
 			}
 		};
 		fetchData();
