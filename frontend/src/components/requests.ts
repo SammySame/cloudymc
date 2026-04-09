@@ -1,23 +1,6 @@
 /* global RequestInit */
 /* global RequestInfo */
 
-async function submitForm(
-	formData: any,
-	tfDryRun = true,
-	ansibleDryRun = true
-) {
-	const response = await getResponse('/api/forms/submit', {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify([formData, tfDryRun, ansibleDryRun]),
-	});
-	const { message, data } = await response!.json();
-
-	console.log(message);
-	sessionStorage.setItem('jobId', data);
-	return data;
-}
-
 async function streamJob(jobId: string) {
 	const response = await getResponse(`/api/forms/stream/${jobId}`, {
 		method: 'GET',
@@ -51,19 +34,19 @@ async function streamJob(jobId: string) {
 		}
 	} finally {
 		reader.releaseLock();
-		sessionStorage.removeItem('jobId');
 	}
 	return success;
 }
 
-async function postBackend(data: any, path: string) {
+async function postBackend(path: string, body?: any) {
 	const response = await getResponse(path, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify(data),
+		body: body ? JSON.stringify(body) : null,
 	});
-	const { message } = await response!.json();
+	const { message, data } = await response!.json();
 	console.log(message);
+	return data;
 }
 
 async function getBackend(path: string) {
@@ -72,7 +55,6 @@ async function getBackend(path: string) {
 		headers: { Accept: 'application/json' },
 	});
 	const { message, data } = await response!.json();
-
 	console.log(message);
 	return data;
 }
@@ -114,4 +96,4 @@ async function getResponse(
 	}
 }
 
-export { submitForm, postBackend, getBackend, streamJob };
+export { postBackend, getBackend, streamJob };
