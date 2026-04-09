@@ -49,6 +49,21 @@ async function handleTest(formData: IChangeEvent<any>) {
 	}
 }
 
+async function handleDestroy(formData: IChangeEvent<any>) {
+	try {
+		const jobId = await postBackend('/api/destroy');
+		const success = await streamJob(jobId);
+		if (!success) throw new Error('Process returned failure');
+	} catch (error) {
+		console.error(`Failed to destroy instance: ${error}`);
+	}
+	try {
+		await postBackend('/api/forms/save', formData);
+	} catch (error) {
+		console.error(`Failed to save form data: ${error}`);
+	}
+}
+
 function handleError(errors: RJSFValidationError[]) {
 	console.log('Validation error:', errors);
 	if (!errors?.length) return;
@@ -68,4 +83,4 @@ function handleError(errors: RJSFValidationError[]) {
 	}, 300);
 }
 
-export { handleSubmit, handleTest, handleError };
+export { handleSubmit, handleTest, handleDestroy, handleError };

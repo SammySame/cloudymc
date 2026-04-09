@@ -29,6 +29,29 @@ def run_terraform(cwd: str = '.', dry_run=True):
 		return
 
 
+def run_terraform_destroy(cwd: str = '.'):
+	process = subprocess.Popen(
+		['terraform', 'destroy', '-input=false', '-no-color'],
+		cwd=cwd,
+		stdin=subprocess.PIPE,
+		stdout=subprocess.PIPE,
+		stderr=subprocess.STDOUT,
+		text=True,
+		bufsize=1,
+	)
+
+	assert process.stdout is not None
+	for line in process.stdout:
+		yield stream_event(f'[Terraform] {line.rstrip()}')
+
+	process.wait()
+	yield stream_event(
+		f'[Terraform] Process finished with code: {process.returncode}', not process.returncode
+	)
+	if process.returncode != 0:
+		return
+
+
 def get_terraform_output(name: str, cwd: str = '.'):
 	process = subprocess.run(
 		['terraform', 'output', '-raw', '-no-color', name],

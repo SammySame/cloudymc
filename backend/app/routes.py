@@ -7,7 +7,7 @@ from typing import Any
 from flask import Blueprint, Response, jsonify, request, stream_with_context
 
 from app.config import CONFIG_FILE_NAME, TF_PATH
-from app.processes import get_terraform_output
+from app.processes import get_terraform_output, run_terraform_destroy
 from app.runner import run_pipeline
 from app.utils.job_manager import job_manager
 from app.utils.json_helpers import load_json, save_json
@@ -45,6 +45,14 @@ def is_instance_running():
 	if is_running is None:
 		return jsonify(_format_response('Could not check instance status')), 404
 	return jsonify(_format_response('Cloud instance is running', is_running)), 200
+
+
+@api_bp.route('/destroy', methods=['POST'])
+def destroy():
+	if not job_manager.acquire():
+		return jsonify(_format_response('Previous request is already being processed')), 409
+	job_id = _run_thread(lambda: run_terraform_destroy(TF_PATH))
+	return jsonify(_format_response('Deletion process started...', job_id)), 200
 
 
 @api_bp.route('/forms/save', methods=['POST'])
