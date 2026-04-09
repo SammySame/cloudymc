@@ -37,7 +37,7 @@ def get_terraform_output(name: str, cwd: str = '.'):
 		text=True,
 		check=True,
 	)
-	return process.stdout
+	return '' if 'Warning' in process.stdout else process.stdout
 
 
 def get_terraform_state(cwd: str = '.'):
