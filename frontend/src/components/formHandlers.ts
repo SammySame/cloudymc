@@ -16,14 +16,8 @@ async function handleSubmit(formData: IChangeEvent<any>, isRunning: boolean) {
 		}
 	}
 	try {
-		const jobId = await submitForm(transformFormData(formData), false, false);
-		const success = await streamJob(jobId);
-		if (!success) {
-			console.error(
-				'Process failed. Check the logs for the potential source of the issue'
-			);
-			return;
-		}
+		const transFormData = transformFormData(formData);
+		await handleStream(() => submitForm(transFormData, false, false));
 	} catch (error) {
 		console.error(`Failed to submit form data: ${error}`);
 	}
@@ -36,14 +30,8 @@ async function handleSubmit(formData: IChangeEvent<any>, isRunning: boolean) {
 
 async function handleTest(formData: IChangeEvent<any>) {
 	try {
-		const jobId = await submitForm(transformFormData(formData), true, true);
-		const success = await streamJob(jobId);
-		if (!success) {
-			console.error(
-				'Process failed. Check the logs for the potential source of the issue'
-			);
-			return;
-		}
+		const transFormData = transformFormData(formData);
+		await handleStream(() => submitForm(transFormData, true, true));
 	} catch (error) {
 		console.error(`Failed to submit form data: ${error}`);
 	}
@@ -66,6 +54,17 @@ function handleError(errors: RJSFValidationError[]) {
 		const input = el.querySelector<HTMLElement>('input, select, textarea');
 		input?.focus({ preventScroll: true });
 	}, 300);
+}
+
+async function handleStream(func: Function) {
+	const jobId = await submitForm(func());
+	const success = await streamJob(jobId);
+	if (!success) {
+		console.error(
+			'Process failed. Check the logs for the potential source of the issue'
+		);
+		return;
+	}
 }
 
 export { handleSubmit, handleTest, handleError };
