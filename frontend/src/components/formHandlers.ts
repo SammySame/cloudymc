@@ -1,6 +1,6 @@
 import { IChangeEvent } from '@rjsf/core';
 import { RJSFValidationError } from '@rjsf/utils';
-import { postBackend, submitForm, streamJob } from './requests';
+import { postBackend, streamJob } from './requests';
 import transformFormData from './transformFormData';
 
 async function handleSubmit(formData: IChangeEvent<any>, isRunning: boolean) {
@@ -17,12 +17,18 @@ async function handleSubmit(formData: IChangeEvent<any>, isRunning: boolean) {
 	}
 	try {
 		const transFormData = transformFormData(formData);
-		await handleStream(() => submitForm(transFormData, false, false));
+		const jobId = await postBackend('/api/forms/submit', [
+			transFormData,
+			false,
+			false,
+		]);
+		const success = await streamJob(jobId);
+		if (!success) throw new Error('Process returned failure');
 	} catch (error) {
-		console.error(`Failed to submit form data: ${error}`);
+		console.error(`Failed to submit: ${error}`);
 	}
 	try {
-		await postBackend(formData, '/api/forms/save');
+		await postBackend('/api/forms/save', formData);
 	} catch (error) {
 		console.error(`Failed to save form data: ${error}`);
 	}
@@ -31,9 +37,15 @@ async function handleSubmit(formData: IChangeEvent<any>, isRunning: boolean) {
 async function handleTest(formData: IChangeEvent<any>) {
 	try {
 		const transFormData = transformFormData(formData);
-		await handleStream(() => submitForm(transFormData, true, true));
+		const jobId = await postBackend('/api/forms/submit', [
+			transFormData,
+			true,
+			true,
+		]);
+		const success = await streamJob(jobId);
+		if (!success) throw new Error('Process returned failure');
 	} catch (error) {
-		console.error(`Failed to submit form data: ${error}`);
+		console.error(`Failed to test submit: ${error}`);
 	}
 }
 
@@ -54,17 +66,6 @@ function handleError(errors: RJSFValidationError[]) {
 		const input = el.querySelector<HTMLElement>('input, select, textarea');
 		input?.focus({ preventScroll: true });
 	}, 300);
-}
-
-async function handleStream(func: Function) {
-	const jobId = await submitForm(func());
-	const success = await streamJob(jobId);
-	if (!success) {
-		console.error(
-			'Process failed. Check the logs for the potential source of the issue'
-		);
-		return;
-	}
 }
 
 export { handleSubmit, handleTest, handleError };
