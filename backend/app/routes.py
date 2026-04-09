@@ -27,11 +27,11 @@ def get_instance():
 	try:
 		instance_ip = get_terraform_output('instance_address', TF_PATH)
 	except Exception as e:
-		return jsonify({'message': str(e)}), 500
+		return jsonify(_format_response(str(e))), 500
 	if not instance_ip:
-		return jsonify({'message': 'Could not get cloud instance IP address'}), 404
+		return jsonify(_format_response('Could not get cloud instance IP address')), 404
 	return jsonify(
-		{'message': f'Cloud instance IP address is: {instance_ip}', 'data': instance_ip}
+		_format_response(f'Cloud instance IP address is: {instance_ip}', instance_ip)
 	), 200
 
 
@@ -40,10 +40,10 @@ def is_instance_running():
 	try:
 		is_running = get_terraform_output('instance_address', TF_PATH)
 	except Exception as e:
-		return jsonify({'message': str(e)}), 500
+		return jsonify(_format_response(str(e))), 500
 	if is_running is None:
-		return jsonify({'message': 'Could not check instance status'}), 404
-	return jsonify({'message': 'Cloud instance is running', 'data': is_running}), 200
+		return jsonify(_format_response('Could not check instance status')), 404
+	return jsonify(_format_response('Cloud instance is running', is_running)), 200
 
 
 @api_bp.route('/forms/save', methods=['POST'])
@@ -53,10 +53,10 @@ def save_config():
 		user_data_path = load_environment_variable('USER_DATA_PATH')
 		save_json(config, os.path.join(user_data_path, CONFIG_FILE_NAME))
 		return jsonify(
-			{'message': f'File saved successfully: {user_data_path}/{CONFIG_FILE_NAME}'}
+			_format_response(f'File saved successfully: {user_data_path}/{CONFIG_FILE_NAME}')
 		), 200
 	except Exception as e:
-		return jsonify({'message': str(e)}), 500
+		return jsonify(_format_response(str(e))), 500
 
 
 @api_bp.route('/forms/load', methods=['GET'])
@@ -65,25 +65,24 @@ def load_config():
 		user_data_path = load_environment_variable('USER_DATA_PATH')
 		config = load_json(os.path.join(user_data_path, CONFIG_FILE_NAME))
 		return jsonify(
-			{
-				'message': f'File loaded successfully: {user_data_path}/${CONFIG_FILE_NAME}',
-				'data': config,
-			}
+			_format_response(
+				f'File loaded successfully: {user_data_path}/${CONFIG_FILE_NAME}', config
+			)
 		)
 	except FileNotFoundError as e:
-		return jsonify({'message': str(e)}), 404
+		return jsonify(_format_response(str(e))), 404
 	except Exception as e:
-		return jsonify({'message': str(e)}), 500
+		return jsonify(_format_response(str(e))), 500
 
 
 @api_bp.route('/forms/submit', methods=['POST'])
 def apply_config():
 	body: tuple[dict, bool, bool] = request.get_json(force=True)
 	if body is None:
-		return jsonify({'message': 'Invalid or missing JSON body'}), 400
+		return jsonify(_format_response('Invalid or missing JSON body')), 400
 
 	if not job_manager.acquire():
-		return jsonify({'message': 'Previous request is already being processed'}), 409
+		return jsonify(_format_response('Previous request is already being processed')), 409
 
 	job_id = str(uuid.uuid4())
 	q = job_manager.create(job_id)
@@ -97,14 +96,14 @@ def apply_config():
 			job_manager.release()
 
 	threading.Thread(target=_run_thread, daemon=True).start()
-	return jsonify({'message': 'Initial process started...', 'data': job_id}), 200
+	return jsonify(_format_response('Initial process started...', job_id)), 200
 
 
 @api_bp.route('/forms/stream/<job_id>', methods=['GET'])
 def stream_job(job_id: str):
 	q = job_manager.get(job_id)
 	if q is None:
-		return jsonify({'message': 'Unknown job ID'}), 404
+		return jsonify(_format_response('Unknown job ID')), 404
 
 	def _generate():
 		try:
