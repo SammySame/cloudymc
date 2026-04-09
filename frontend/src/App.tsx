@@ -15,7 +15,11 @@ import {
 } from './components/FormTemplates';
 import { getBackend } from './components/requests';
 import InstanceStatus from './components/InstanceStatus';
-import { handleSubmit, handleError } from './components/formHandlers';
+import {
+	handleSubmit,
+	handleTest,
+	handleError,
+} from './components/formHandlers';
 
 export default function App() {
 	const [schema, setSchema] = useState<RJSFSchema>(schemaFile as RJSFSchema);
@@ -108,7 +112,13 @@ export default function App() {
 						address={instanceAddress}
 						isRunning={isRunning}
 					/>
-					<Button type="button">Test</Button>
+					<Button
+						tooltip="Test the current configuration without saving and applying any changes"
+						onClick={(_) => handleTest(formData)}
+						type="button"
+					>
+						Test
+					</Button>
 				</div>
 			</Form>
 		</div>

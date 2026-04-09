@@ -24,7 +24,26 @@ async function handleSubmit(formData: IChangeEvent<any>, isRunning: boolean) {
 			);
 			return;
 		}
+	} catch (error) {
+		console.error(`Failed to submit form data: ${error}`);
+	}
+	try {
 		await postBackend(formData, '/api/forms/save');
+	} catch (error) {
+		console.error(`Failed to save form data: ${error}`);
+	}
+}
+
+async function handleTest(formData: IChangeEvent<any>) {
+	try {
+		const jobId = await submitForm(transformFormData(formData), true, true);
+		const success = await streamJob(jobId);
+		if (!success) {
+			console.error(
+				'Process failed. Check the logs for the potential source of the issue'
+			);
+			return;
+		}
 	} catch (error) {
 		console.error(`Failed to submit form data: ${error}`);
 	}
@@ -49,4 +68,4 @@ function handleError(errors: RJSFValidationError[]) {
 	}, 300);
 }
 
-export { handleSubmit, handleError };
+export { handleSubmit, handleTest, handleError };
