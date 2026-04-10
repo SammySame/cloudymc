@@ -16,7 +16,7 @@ import {
 } from './components/FormTemplates';
 import { getBackend } from './components/requests';
 import InstanceStatus from './components/InstanceStatus';
-import { submit, test, error, save } from './components/formHandlers';
+import { submit, test, error, destroy, save } from './components/formHandlers';
 
 export default function App() {
 	const [schema, setSchema] = useState<RJSFSchema>(schemaFile as RJSFSchema);
@@ -113,6 +113,26 @@ export default function App() {
 		}
 	};
 
+	const handleDestroy = async () => {
+		try {
+			setIsLoading(true);
+			await destroy();
+		} catch (error) {
+			console.error('Failed to destroy:', error);
+			return;
+		} finally {
+			setIsLoading(false);
+		}
+		try {
+			setIsLoading(true);
+			await save(formData);
+		} catch (error) {
+			console.error('Failed to save form data:', error);
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
 	// Since defaulting boolean to false while requiring it to be true
 	// which would force the user to set it explicitly to true is impossible
 	// in RJSF, the value is checked here instead
@@ -169,6 +189,25 @@ export default function App() {
 						type="button"
 					>
 						Test
+					</Button>
+				</div>
+				<div
+					style={{
+						paddingTop: '5em',
+						display: 'flex',
+						alignItems: 'center',
+						justifyContent: 'space-around',
+					}}
+				>
+					<Button
+						tooltip="Destroy instance and every resource associated with it in cloud"
+						onClick={(_) => handleDestroy()}
+						loading={isLoading}
+						severity="danger"
+						style={{ fontWeight: 'bold' }}
+						type="button"
+					>
+						Destroy
 					</Button>
 				</div>
 			</Form>
