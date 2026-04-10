@@ -11,7 +11,7 @@ async function handleSubmit(formData: IChangeEvent<any>, isRunning: boolean) {
 				'Please type "yes" if you wish to continue'
 		);
 		if (input != 'yes') {
-			console.log('Submit cancelled');
+			console.log('Submit action cancelled');
 			return;
 		}
 	}
@@ -45,7 +45,7 @@ async function handleTest(formData: IChangeEvent<any>) {
 		const success = await streamJob(jobId);
 		if (!success) throw new Error('Process returned failure');
 	} catch (error) {
-		console.error(`Failed to test submit: ${error}`);
+		console.error(`Failed to test: ${error}`);
 	}
 }
 
