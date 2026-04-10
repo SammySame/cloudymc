@@ -75,7 +75,7 @@ def load_config():
 		config = load_json(os.path.join(user_data_path, CONFIG_FILE_NAME))
 		return jsonify(
 			_format_response(
-				f'File loaded successfully: {user_data_path}/${CONFIG_FILE_NAME}', config
+				f'File loaded successfully: {user_data_path}/{CONFIG_FILE_NAME}', config
 			)
 		)
 	except FileNotFoundError as e:
