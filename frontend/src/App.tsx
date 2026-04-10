@@ -1,4 +1,5 @@
 import { useState, useEffect, useContext } from 'react';
+import { IChangeEvent } from '@rjsf/core';
 import { PrimeReactContext } from 'primereact/api';
 import { Form } from '@rjsf/primereact';
 import { Button } from 'primereact/button';
@@ -15,11 +16,7 @@ import {
 } from './components/FormTemplates';
 import { getBackend } from './components/requests';
 import InstanceStatus from './components/InstanceStatus';
-import {
-	handleSubmit,
-	handleTest,
-	handleError,
-} from './components/formHandlers';
+import { submit, test, error, save } from './components/formHandlers';
 
 export default function App() {
 	const [schema, setSchema] = useState<RJSFSchema>(schemaFile as RJSFSchema);
@@ -29,6 +26,7 @@ export default function App() {
 	const { isDark, toggle } = useTheme();
 	const [instanceAddress, setInstanceAddress] = useState<string>('');
 	const [isRunning, setIsRunning] = useState(false);
+	const [isLoading, setIsLoading] = useState(false);
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -73,6 +71,47 @@ export default function App() {
 		);
 	}
 
+	const handleSubmit = async (formData: IChangeEvent<any>) => {
+		if (isRunning) {
+			const input = prompt(
+				'Any changes can result in cloud instance data loss.\n' +
+					'Make sure to backup important data if neccessary.\n\n' +
+					'Please type "yes" if you wish to continue'
+			);
+			if (input != 'yes') {
+				console.log('Submit action cancelled');
+				return;
+			}
+		}
+		try {
+			setIsLoading(true);
+			await submit(formData);
+		} catch (error) {
+			console.error(`Failed submit action: ${error}`);
+		} finally {
+			setIsLoading(false);
+		}
+		try {
+			setIsLoading(true);
+			await save(formData);
+		} catch (error) {
+			console.error(`Failed to save form data: ${error}`);
+		} finally {
+			setIsRunning(false);
+		}
+	};
+
+	const handleTest = async (data: IChangeEvent<any>) => {
+		try {
+			setIsLoading(true);
+			await test(data);
+		} catch (error) {
+			console.error(`Failed test action: ${error}`);
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
 	// Since defaulting boolean to false while requiring it to be true
 	// which would force the user to set it explicitly to true is impossible
 	// in RJSF, the value is checked here instead
@@ -96,8 +135,8 @@ export default function App() {
 				uiSchema={uiSchema}
 				validator={validator}
 				templates={{ ArrayFieldTitleTemplate, FieldErrorTemplate }}
-				onSubmit={(data, _event) => handleSubmit(data, isRunning)}
-				onError={handleError}
+				onSubmit={handleSubmit}
+				onError={error}
 				formData={formData}
 				showErrorList={false}
 				customValidate={customValidate}
@@ -112,6 +151,7 @@ export default function App() {
 				>
 					<Button
 						tooltip="Apply current configuration and save it on success"
+						loading={isLoading}
 						type="submit"
 					>
 						Submit
@@ -124,6 +164,7 @@ export default function App() {
 					<Button
 						tooltip="Test the current configuration without saving and applying any changes"
 						onClick={(_) => handleTest(formData)}
+						loading={isLoading}
 						type="button"
 					>
 						Test
