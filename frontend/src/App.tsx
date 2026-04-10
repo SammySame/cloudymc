@@ -87,7 +87,8 @@ export default function App() {
 			setIsLoading(true);
 			await submit(formData);
 		} catch (error) {
-			console.error(`Failed submit action: ${error}`);
+			console.error('Failed submit action:', error);
+			return;
 		} finally {
 			setIsLoading(false);
 		}
@@ -95,7 +96,7 @@ export default function App() {
 			setIsLoading(true);
 			await save(formData);
 		} catch (error) {
-			console.error(`Failed to save form data: ${error}`);
+			console.error('Failed to save form data:', error);
 		} finally {
 			setIsRunning(false);
 		}
@@ -106,7 +107,7 @@ export default function App() {
 			setIsLoading(true);
 			await test(data);
 		} catch (error) {
-			console.error(`Failed test action: ${error}`);
+			console.error('Failed test action:', error);
 		} finally {
 			setIsLoading(false);
 		}
