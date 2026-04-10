@@ -23,31 +23,21 @@ def index():
 	return static_bp.send_static_file('index.html')
 
 
-@api_bp.route('/instance/address', methods=['GET'])
+@api_bp.route('/terraform/output', methods=['GET'])
 def get_instance():
+	name = request.args.get('name')
+	if name is None:
+		return jsonify(_format_response('Invalid or missing query string')), 400
 	try:
-		instance_ip = get_terraform_output('instance_address', TF_PATH)
+		output = get_terraform_output(name, TF_PATH)
 	except Exception as e:
 		return jsonify(_format_response(str(e))), 500
-	if not instance_ip:
-		return jsonify(_format_response('Could not get cloud instance IP address')), 204
-	return jsonify(
-		_format_response(f'Cloud instance IP address is: {instance_ip}', instance_ip)
-	), 200
+	if not name:
+		return jsonify(_format_response(f'Could not get Terraform output: {name}')), 204
+	return jsonify(_format_response(f'Successfully retrieved: {name}', output)), 200
 
 
-@api_bp.route('/instance/running', methods=['GET'])
-def is_instance_running():
-	try:
-		is_running = get_terraform_output('instance_address', TF_PATH)
-	except Exception as e:
-		return jsonify(_format_response(str(e))), 500
-	if is_running is None:
-		return jsonify(_format_response('Could not check instance status')), 204
-	return jsonify(_format_response('Cloud instance is running', is_running)), 200
-
-
-@api_bp.route('/destroy', methods=['POST'])
+@api_bp.route('/terraform/destroy', methods=['POST'])
 def destroy():
 	if not job_manager.acquire():
 		return jsonify(_format_response('Previous request is already being processed')), 409
