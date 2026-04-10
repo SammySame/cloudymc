@@ -30,7 +30,7 @@ def get_instance():
 	except Exception as e:
 		return jsonify(_format_response(str(e))), 500
 	if not instance_ip:
-		return jsonify(_format_response('Could not get cloud instance IP address')), 404
+		return jsonify(_format_response('Could not get cloud instance IP address')), 204
 	return jsonify(
 		_format_response(f'Cloud instance IP address is: {instance_ip}', instance_ip)
 	), 200
@@ -43,7 +43,7 @@ def is_instance_running():
 	except Exception as e:
 		return jsonify(_format_response(str(e))), 500
 	if is_running is None:
-		return jsonify(_format_response('Could not check instance status')), 404
+		return jsonify(_format_response('Could not check instance status')), 204
 	return jsonify(_format_response('Cloud instance is running', is_running)), 200
 
 
