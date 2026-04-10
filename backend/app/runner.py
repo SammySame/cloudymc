@@ -1,3 +1,5 @@
+import time
+
 from app.config import ANSIBLE_MAP_PATH, ANSIBLE_PATH, TF_PATH, TF_VARS_MAP_PATH, TF_VARS_PATH
 from app.processes import (
 	get_terraform_output,
@@ -59,11 +61,23 @@ def run_pipeline(data: tuple[dict, bool, bool]):
 		yield stream_event('Empty Terraform output for: Instance Address', False)
 		return
 
-	try:
-		add_known_hosts(instance_ip)
-	except Exception as e:
-		yield stream_event(str(e), False)
-		return
+	# If Instance is not yet online the ssh-keyscan will fail
+	MAX_RETRIES = 3
+	cooldown = 10
+	success = False
+	for i in range(MAX_RETRIES):
+		try:
+			add_known_hosts(instance_ip)
+		except Exception as e:
+			yield stream_event(
+				f'{e!s}. Retrying after {cooldown} seconds... ({i + 1}/{MAX_RETRIES})'
+			)
+			time.sleep(cooldown)
+			continue
+		success = True
+		break
+	if not success:
+		yield stream_event('Failed to retrieve instance SSH keys', False)
 
 	try:
 		ansible_map = load_json(ANSIBLE_MAP_PATH)

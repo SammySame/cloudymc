@@ -13,9 +13,7 @@ def add_known_hosts(host: str, path='~/.ssh/known_hosts'):
 	try:
 		result = subprocess.run(['ssh-keyscan', host], capture_output=True, text=True, check=True)
 	except subprocess.CalledProcessError as e:
-		raise RuntimeError(
-			f'ssh-keyscan finished with return code: {e.returncode}\n{e.stderr}'
-		) from None
+		raise RuntimeError(f'ssh-keyscan finished with return code: {e.returncode}') from None
 
 	host_keys = result.stdout.split('\n')
 	host_keys = filter(lambda key: not key.startswith('#'), host_keys)
