@@ -31,7 +31,7 @@ def run_terraform(cwd: str = '.', dry_run=True):
 
 def run_terraform_destroy(cwd: str = '.'):
 	process = subprocess.Popen(
-		['terraform', 'destroy', '-input=false', '-no-color'],
+		['terraform', 'destroy', '-auto-approve', '-input=false', '-no-color'],
 		cwd=cwd,
 		stdin=subprocess.PIPE,
 		stdout=subprocess.PIPE,
