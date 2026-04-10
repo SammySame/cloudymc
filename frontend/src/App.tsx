@@ -110,7 +110,12 @@ export default function App() {
 						alignItems: 'center',
 					}}
 				>
-					<Button type="submit">Apply</Button>
+					<Button
+						tooltip="Apply current configuration and save it on success"
+						type="submit"
+					>
+						Submit
+					</Button>
 					<InstanceStatus
 						id="instance-status"
 						address={instanceAddress}
