@@ -36,16 +36,15 @@ export default function App() {
 			} catch (error) {
 				console.error('Failed to load saved form data:', error);
 			}
-			try {
-				const instance_ip = await getBackend('/api/instance/address');
-				if (instance_ip) setInstanceAddress(instance_ip);
-				const instance_status = await getBackend('/api/instance/running');
-				if (instance_status !== null) setIsRunning(instance_status);
-			} catch (error) {
-				console.warn('Failed to retrieve cloud instance status:', error);
-			}
 		};
 		fetchData();
+	}, []);
+
+	useEffect(() => {
+		const interval = setInterval(() => {
+			getInstanceStatus();
+		}, 30000);
+		return () => clearInterval(interval);
 	}, []);
 
 	useEffect(() => {
@@ -91,6 +90,7 @@ export default function App() {
 			return;
 		} finally {
 			setIsLoading(false);
+			getInstanceStatus();
 		}
 		try {
 			setIsLoading(true);
@@ -99,6 +99,7 @@ export default function App() {
 			console.error('Failed to save form data:', error);
 		} finally {
 			setIsRunning(false);
+			getInstanceStatus();
 		}
 	};
 
@@ -110,6 +111,7 @@ export default function App() {
 			console.error('Failed test action:', error);
 		} finally {
 			setIsLoading(false);
+			getInstanceStatus();
 		}
 	};
 
@@ -122,6 +124,7 @@ export default function App() {
 			return;
 		} finally {
 			setIsLoading(false);
+			getInstanceStatus();
 		}
 		try {
 			setIsLoading(true);
@@ -130,7 +133,19 @@ export default function App() {
 			console.error('Failed to save form data:', error);
 		} finally {
 			setIsLoading(false);
+			getInstanceStatus();
 		}
+	};
+
+	const getInstanceStatus = async () => {
+		const instance_ip = await getBackend(
+			'/api/terraform/output?name=instance_address'
+		);
+		if (instance_ip) setInstanceAddress(instance_ip);
+		const instance_status = await getBackend(
+			'/api/terraform/output?name=is_instance_running'
+		);
+		if (instance_status !== null) setIsRunning(instance_status);
 	};
 
 	// Since defaulting boolean to false while requiring it to be true
