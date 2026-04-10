@@ -26,7 +26,7 @@ async function test(formData: IChangeEvent<any>) {
 }
 
 async function destroy() {
-	const jobId = await postBackend('/api/destroy');
+	const jobId = await postBackend('/terraform/destroy');
 	const success = await streamJob(jobId);
 	if (!success) throw new Error('Process returned failure');
 }
