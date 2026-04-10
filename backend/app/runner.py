@@ -36,7 +36,9 @@ def run_pipeline(data: tuple[dict, bool, bool]):
 		yield stream_event(str(e), False)
 		return
 	if not tf_state or 'No state file was found!' in tf_state:
-		yield stream_event('Ansible cannot be run due to missing/empty Terraform state file', False)
+		yield stream_event(
+			'Ansible cannot be run due to missing/empty Terraform state file', tf_dry_run
+		)
 		return
 
 	try:
