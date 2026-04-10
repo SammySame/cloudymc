@@ -1,6 +1,7 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext, createRef } from 'react';
 import { IChangeEvent } from '@rjsf/core';
 import { PrimeReactContext } from 'primereact/api';
+import RJSFForm from '@rjsf/core';
 import { Form } from '@rjsf/primereact';
 import { Button } from 'primereact/button';
 import validator from '@rjsf/validator-ajv8';
@@ -27,6 +28,7 @@ export default function App() {
 	const [instanceAddress, setInstanceAddress] = useState<string>('');
 	const [isRunning, setIsRunning] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
+	const formRef = createRef<RJSFForm>();
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -104,6 +106,9 @@ export default function App() {
 	};
 
 	const handleTest = async (data: IChangeEvent<any>) => {
+		if (!formRef.current) return;
+		const isValid = formRef.current.validateForm();
+		if (!isValid) return;
 		try {
 			setIsLoading(true);
 			await test(data);
@@ -167,6 +172,7 @@ export default function App() {
 		<div style={{ maxWidth: '1000px', margin: '0 auto', padding: '20px' }}>
 			<ThemeToggle isDark={isDark} toggle={toggle} />
 			<Form
+				ref={formRef}
 				schema={schema}
 				uiSchema={uiSchema}
 				validator={validator}
