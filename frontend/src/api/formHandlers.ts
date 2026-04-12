@@ -1,7 +1,7 @@
 import { IChangeEvent } from '@rjsf/core';
 import { RJSFValidationError } from '@rjsf/utils';
-import { postBackend, streamJob } from './requests';
-import transformFormData from './transformFormData';
+import { postBackend, streamJob } from '../api/requests';
+import transformFormData from '../utils/transformFormData';
 
 async function submit(formData: IChangeEvent<any>) {
 	const transFormData = transformFormData(formData);

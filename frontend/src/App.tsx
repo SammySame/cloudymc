@@ -1,53 +1,38 @@
-import { useState, useEffect, useContext, createRef } from 'react';
-import { IChangeEvent } from '@rjsf/core';
+import { useEffect, useContext, useRef } from 'react';
 import { PrimeReactContext } from 'primereact/api';
 import RJSFForm from '@rjsf/core';
 import { Form } from '@rjsf/primereact';
-import { Button } from 'primereact/button';
 import validator from '@rjsf/validator-ajv8';
-import { RJSFSchema, UiSchema, CustomValidator } from '@rjsf/utils';
 import 'primeicons/primeicons.css';
-import schemaFile from './assets/bundled.schema.json';
-import uiSchemaFile from './assets/schemas/main.uischema.json';
-import useTheme from './components/useTheme';
+
+import useTheme from './hooks/useTheme';
 import ThemeToggle from './components/ThemeToggle';
 import {
 	ArrayFieldTitleTemplate,
 	FieldErrorTemplate,
 } from './components/FormTemplates';
-import { getBackend } from './components/requests';
-import InstanceStatus from './components/InstanceStatus';
-import { submit, test, error, destroy, save } from './components/formHandlers';
+import FormControls from './components/FormControls';
+
+import { error } from './api/formHandlers';
+import { useSchemas } from './hooks/useSchemas';
+import { useInstanceManager } from './hooks/useInstanceManager';
+import { minecraftEulaValidator } from './utils/validators';
 
 export default function App() {
-	const [schema, setSchema] = useState<RJSFSchema>(schemaFile as RJSFSchema);
-	const [uiSchema, setUiSchema] = useState<UiSchema>(uiSchemaFile as UiSchema);
-	const [formData, setFormData] = useState<any>(null);
 	const { changeTheme } = useContext(PrimeReactContext);
 	const { isDark, toggle } = useTheme();
-	const [instanceAddress, setInstanceAddress] = useState<string>('');
-	const [isRunning, setIsRunning] = useState(false);
-	const [isLoading, setIsLoading] = useState(false);
-	const formRef = createRef<RJSFForm>();
 
-	useEffect(() => {
-		const fetchData = async () => {
-			try {
-				const data = await getBackend('/api/forms/load');
-				if (data) setFormData(data);
-			} catch (error) {
-				console.error('Failed to load saved form data:', error);
-			}
-		};
-		fetchData();
-	}, []);
-
-	useEffect(() => {
-		const interval = setInterval(() => {
-			getInstanceStatus();
-		}, 30000);
-		return () => clearInterval(interval);
-	}, []);
+	const formRef = useRef<RJSFForm>(null);
+	const { schema, uiSchema } = useSchemas();
+	const {
+		formData,
+		instanceAddress,
+		isInstanceRunning,
+		isLoading,
+		handleSubmit,
+		handleTest,
+		handleDestroy,
+	} = useInstanceManager(formRef);
 
 	useEffect(() => {
 		changeTheme?.(
@@ -57,116 +42,6 @@ export default function App() {
 			() => {}
 		);
 	}, [changeTheme, isDark]);
-
-	if (import.meta.hot) {
-		import.meta.hot.accept(
-			['./assets/bundled.schema.json', './assets/schemas/main.uischema.json'],
-			([newSchemaModule, newUiSchemaModule]) => {
-				if (newSchemaModule) {
-					setSchema(newSchemaModule.default as RJSFSchema);
-				}
-				if (newUiSchemaModule) {
-					setUiSchema(newUiSchemaModule.default);
-				}
-			}
-		);
-	}
-
-	const handleSubmit = async (formData: IChangeEvent<any>) => {
-		if (isRunning) {
-			const input = prompt(
-				'Any changes can result in cloud instance data loss.\n' +
-					'Make sure to backup important data if neccessary.\n\n' +
-					'Please type "yes" if you wish to continue'
-			);
-			if (input != 'yes') {
-				console.log('Submit action cancelled');
-				return;
-			}
-		}
-		try {
-			setIsLoading(true);
-			await submit(formData);
-		} catch (error) {
-			console.error('Failed submit action:', error);
-			return;
-		} finally {
-			setIsLoading(false);
-			getInstanceStatus();
-		}
-		try {
-			setIsLoading(true);
-			await save(formData);
-		} catch (error) {
-			console.error('Failed to save form data:', error);
-		} finally {
-			setIsRunning(false);
-			getInstanceStatus();
-		}
-	};
-
-	const handleTest = async (data: IChangeEvent<any>) => {
-		if (!formRef.current) return;
-		const isValid = formRef.current.validateForm();
-		if (!isValid) return;
-		try {
-			setIsLoading(true);
-			await test(data);
-		} catch (error) {
-			console.error('Failed test action:', error);
-		} finally {
-			setIsLoading(false);
-			getInstanceStatus();
-		}
-	};
-
-	const handleDestroy = async () => {
-		try {
-			setIsLoading(true);
-			await destroy();
-		} catch (error) {
-			console.error('Failed to destroy:', error);
-			return;
-		} finally {
-			setIsLoading(false);
-			getInstanceStatus();
-		}
-		try {
-			setIsLoading(true);
-			await save(formData);
-		} catch (error) {
-			console.error('Failed to save form data:', error);
-		} finally {
-			setIsLoading(false);
-			getInstanceStatus();
-		}
-	};
-
-	const getInstanceStatus = async () => {
-		const instance_ip = await getBackend(
-			'/api/terraform/output?name=instance_address'
-		);
-		if (instance_ip) setInstanceAddress(instance_ip);
-		const instance_status = await getBackend(
-			'/api/terraform/output?name=is_instance_running'
-		);
-		if (instance_status !== null) setIsRunning(instance_status);
-	};
-
-	// Since defaulting boolean to false while requiring it to be true
-	// which would force the user to set it explicitly to true is impossible
-	// in RJSF, the value is checked here instead
-	const customValidate: CustomValidator<Record<string, any>> = function (
-		formData,
-		errors
-	) {
-		if (formData?.minecraft?.eulaAccepted !== true) {
-			errors?.minecraft?.eulaAccepted?.addError(
-				'Minecraft EULA must be accepted'
-			);
-		}
-		return errors;
-	};
 
 	return (
 		<div style={{ maxWidth: '1000px', margin: '0 auto', padding: '20px' }}>
@@ -181,56 +56,15 @@ export default function App() {
 				onError={error}
 				formData={formData}
 				showErrorList={false}
-				customValidate={customValidate}
+				customValidate={minecraftEulaValidator}
 			>
-				<div
-					style={{
-						padding: '2em',
-						display: 'flex',
-						justifyContent: 'space-around',
-						alignItems: 'center',
-					}}
-				>
-					<Button
-						tooltip="Apply current configuration and save it on success"
-						loading={isLoading}
-						type="submit"
-					>
-						Submit
-					</Button>
-					<InstanceStatus
-						id="instance-status"
-						address={instanceAddress}
-						isRunning={isRunning}
-					/>
-					<Button
-						tooltip="Test the current configuration without saving and applying any changes"
-						onClick={(_) => handleTest(formData)}
-						loading={isLoading}
-						type="button"
-					>
-						Test
-					</Button>
-				</div>
-				<div
-					style={{
-						paddingTop: '5em',
-						display: 'flex',
-						alignItems: 'center',
-						justifyContent: 'space-around',
-					}}
-				>
-					<Button
-						tooltip="Destroy instance and every resource associated with it in cloud"
-						onClick={(_) => handleDestroy()}
-						loading={isLoading}
-						severity="danger"
-						style={{ fontWeight: 'bold' }}
-						type="button"
-					>
-						Destroy
-					</Button>
-				</div>
+				<FormControls
+					isLoading={isLoading}
+					isRunning={isInstanceRunning}
+					instanceAddress={instanceAddress}
+					onTest={handleTest}
+					onDestroy={handleDestroy}
+				/>
 			</Form>
 		</div>
 	);

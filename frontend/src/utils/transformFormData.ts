@@ -1,23 +1,32 @@
 export default function transformFormData(formData: Record<string, any>) {
 	let formDataCopy = structuredClone(formData);
 
-	// Combine ports into singular array for Terraform
-	formDataCopy.dynamic = {};
-	formDataCopy.dynamic.combinedPorts = structuredClone(
-		formDataCopy.minecraft.additionalPorts || []
+	formDataCopy = combinePorts(formDataCopy);
+	formDataCopy = prependPathToSshKeys(
+		formDataCopy,
+		'/etc/cloudymc/data/ssh_keys'
 	);
-	formDataCopy.dynamic.combinedPorts.push({
-		number: formDataCopy.minecraft.serverPort,
-		protocol: 'TCP',
-	});
-
-	// Prefix all SSH keys with the path to directory containing them
-	const SSH_KEYS_PATH = '/etc/cloudymc/data/ssh_keys';
-	formDataCopy = deepSearchModify(formDataCopy, 'sshkey', (value) => {
-		return `${SSH_KEYS_PATH}/${value}`;
-	});
 
 	return formDataCopy;
+}
+
+function combinePorts(formData: Record<string, any>) {
+	formData.dynamic = {};
+	formData.dynamic.combinedPorts = structuredClone(
+		formData.minecraft.additionalPorts || []
+	);
+	formData.dynamic.combinedPorts.push({
+		number: formData.minecraft.serverPort,
+		protocol: 'TCP',
+	});
+	return formData;
+}
+
+function prependPathToSshKeys(formData: Record<string, any>, path: string) {
+	formData = deepSearchModify(formData, 'sshkey', (value) => {
+		return `${path}/${value}`;
+	});
+	return formData;
 }
 
 /**
