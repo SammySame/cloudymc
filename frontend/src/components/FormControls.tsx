@@ -33,11 +33,6 @@ export default function FormControls({
 				>
 					Submit
 				</Button>
-				<InstanceStatus
-					id="instance-status"
-					address={instanceAddress}
-					isRunning={isRunning}
-				/>
 				<Button
 					tooltip="Test the current configuration without saving and applying any changes"
 					onClick={onTest}
@@ -46,15 +41,6 @@ export default function FormControls({
 				>
 					Test
 				</Button>
-			</div>
-			<div
-				style={{
-					paddingTop: '5em',
-					display: 'flex',
-					alignItems: 'center',
-					justifyContent: 'space-around',
-				}}
-			>
 				<Button
 					tooltip="Destroy instance and every resource associated with it in cloud"
 					onClick={onDestroy}
@@ -65,6 +51,19 @@ export default function FormControls({
 				>
 					Destroy
 				</Button>
+			</div>
+			<div
+				style={{
+					display: 'flex',
+					alignItems: 'center',
+					justifyContent: 'space-around',
+				}}
+			>
+				<InstanceStatus
+					id="instance-status"
+					address={instanceAddress}
+					isRunning={isRunning}
+				/>
 			</div>
 		</>
 	);
