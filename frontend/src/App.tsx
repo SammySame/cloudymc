@@ -1,5 +1,6 @@
 import { useEffect, useContext, useRef } from 'react';
 import { PrimeReactContext } from 'primereact/api';
+import { Dialog } from 'primereact/dialog';
 import RJSFForm from '@rjsf/core';
 import { Form } from '@rjsf/primereact';
 import validator from '@rjsf/validator-ajv8';
@@ -29,6 +30,8 @@ export default function App() {
 		instanceAddress,
 		isInstanceRunning,
 		isLoading,
+		composeFileExists,
+		setComposeFileExists,
 		handleSubmit,
 		handleTest,
 		handleDestroy,
@@ -44,28 +47,52 @@ export default function App() {
 	}, [changeTheme, isDark]);
 
 	return (
-		<div style={{ maxWidth: '1000px', margin: '0 auto', padding: '20px' }}>
-			<ThemeToggle isDark={isDark} toggle={toggle} />
-			<Form
-				ref={formRef}
-				schema={schema}
-				uiSchema={uiSchema}
-				validator={validator}
-				templates={{ ArrayFieldTitleTemplate, FieldErrorTemplate }}
-				onSubmit={handleSubmit}
-				onError={error}
-				formData={formData}
-				showErrorList={false}
-				customValidate={minecraftEulaValidator}
+		<>
+			<Dialog
+				header="Custom Compose file detected"
+				position="bottom-right"
+				draggable={false}
+				resizable={false}
+				modal={false}
+				visible={composeFileExists}
+				onHide={() => {
+					if (!composeFileExists) return;
+					setComposeFileExists(false);
+				}}
+				style={{
+					width: '20vw',
+				}}
 			>
-				<FormControls
-					isLoading={isLoading}
-					isRunning={isInstanceRunning}
-					instanceAddress={instanceAddress}
-					onTest={handleTest}
-					onDestroy={handleDestroy}
-				/>
-			</Form>
-		</div>
+				<span style={{ whiteSpace: 'pre-line' }}>
+					Settings under the &quot;Minecraft&quot; category will be ignored in
+					favor of the compose.yml, with the exception of the &quot;Server
+					Port&quot; and &quot;Additional Ports&quot;, which need to match the
+					compose.yml configuration.
+				</span>
+			</Dialog>
+			<div style={{ maxWidth: '1000px', margin: '0 auto', padding: '20px' }}>
+				<ThemeToggle isDark={isDark} toggle={toggle} />
+				<Form
+					ref={formRef}
+					schema={schema}
+					uiSchema={uiSchema}
+					validator={validator}
+					templates={{ ArrayFieldTitleTemplate, FieldErrorTemplate }}
+					onSubmit={handleSubmit}
+					onError={error}
+					formData={formData}
+					showErrorList={false}
+					customValidate={minecraftEulaValidator}
+				>
+					<FormControls
+						isLoading={isLoading}
+						isRunning={isInstanceRunning}
+						instanceAddress={instanceAddress}
+						onTest={handleTest}
+						onDestroy={handleDestroy}
+					/>
+				</Form>
+			</div>
+		</>
 	);
 }

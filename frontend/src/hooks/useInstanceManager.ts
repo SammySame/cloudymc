@@ -8,6 +8,7 @@ export function useInstanceManager(formRef: RefObject<RJSFForm | null>) {
 	const [instanceAddress, setInstanceAddress] = useState<string>('');
 	const [isInstanceRunning, setIsInstanceRunning] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
+	const [composeFileExists, setComposeFileExists] = useState(false);
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -18,6 +19,7 @@ export function useInstanceManager(formRef: RefObject<RJSFForm | null>) {
 				console.error('Failed to load saved form data:', error);
 			}
 			getInstanceStatus();
+			checkComposeFileExists();
 		};
 		fetchData();
 	}, []);
@@ -34,6 +36,12 @@ export function useInstanceManager(formRef: RefObject<RJSFForm | null>) {
 		]);
 		if (ip) setInstanceAddress(ip);
 		if (status !== null) setIsInstanceRunning(status);
+	};
+
+	const checkComposeFileExists = async () => {
+		const exists = await getBackend('/api/compose-file-exists');
+		if (exists !== null) setComposeFileExists(exists);
+		console.log('Compose file:', exists);
 	};
 
 	const performAction = async (action: () => Promise<void>) => {
@@ -91,6 +99,8 @@ export function useInstanceManager(formRef: RefObject<RJSFForm | null>) {
 		instanceAddress,
 		isInstanceRunning,
 		isLoading,
+		composeFileExists,
+		setComposeFileExists,
 		handleSubmit,
 		handleTest,
 		handleDestroy,
