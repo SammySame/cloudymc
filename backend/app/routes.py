@@ -104,6 +104,15 @@ def stream_job(job_id: str):
 	return Response(stream_with_context(_generate()), mimetype='text/event-stream')
 
 
+@api_bp.route('/compose-file-exists', methods=['GET'])
+def compose_file_exists():
+	user_data_path = load_environment_variable('USER_DATA_PATH')
+	if os.path.exists(os.path.join(user_data_path, 'compose.yml')):
+		return jsonify(_format_response('Custom compose file exists')), 200
+	else:
+		return jsonify(_format_response('Custom compose file does not exist')), 204
+
+
 def _format_response(msg: str, data: Any | None = None):
 	response = {'message': msg}
 	if data:
