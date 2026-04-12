@@ -24,7 +24,7 @@ def index():
 
 
 @api_bp.route('/terraform/output', methods=['GET'])
-def get_instance():
+def get_output():
 	name = request.args.get('name')
 	if name is None:
 		return jsonify(_format_response('Invalid or missing query string')), 400
