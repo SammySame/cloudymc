@@ -3,7 +3,10 @@ import RJSFForm from '@rjsf/core';
 import { getBackend } from '../api/requests';
 import { submit, test, destroy, save } from '../api/formHandlers';
 
-export function useInstanceManager(formRef: RefObject<RJSFForm | null>) {
+export function useInstanceManager(
+	formRef: RefObject<RJSFForm | null>,
+	onError: (text: string) => void
+) {
 	const [formData, setFormData] = useState<any>(null);
 	const [instanceAddress, setInstanceAddress] = useState<string>('');
 	const [isInstanceRunning, setIsInstanceRunning] = useState(false);
@@ -16,13 +19,13 @@ export function useInstanceManager(formRef: RefObject<RJSFForm | null>) {
 				const data = await getBackend('/api/forms/load');
 				if (data) setFormData(data);
 			} catch (error) {
-				console.error('Failed to load saved form data:', error);
+				onError(`Failed to load saved form data: ${error}`);
 			}
 			getInstanceStatus();
 			checkComposeFileExists();
 		};
 		fetchData();
-	}, []);
+	}, [onError]);
 
 	useEffect(() => {
 		const interval = setInterval(getInstanceStatus, 30000);
@@ -48,7 +51,7 @@ export function useInstanceManager(formRef: RefObject<RJSFForm | null>) {
 		try {
 			await action();
 		} catch (error) {
-			console.error('Action failed:', error);
+			onError(`Action failed: ${error}`);
 		} finally {
 			setIsLoading(false);
 			await getInstanceStatus();
