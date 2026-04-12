@@ -59,16 +59,14 @@ export default function App() {
 					if (!composeFileExists) return;
 					setComposeFileExists(false);
 				}}
-				style={{
-					width: '20vw',
-				}}
+				style={{ minWidth: '25em', maxWidth: '26vw' }}
 			>
-				<span style={{ whiteSpace: 'pre-line' }}>
+				<p className="m-0">
 					Settings under the &quot;Minecraft&quot; category will be ignored in
 					favor of the compose.yml, with the exception of the &quot;Server
 					Port&quot; and &quot;Additional Ports&quot;, which need to match the
 					compose.yml configuration.
-				</span>
+				</p>
 			</Dialog>
 			<div style={{ maxWidth: '1000px', margin: '0 auto', padding: '20px' }}>
 				<ThemeToggle isDark={isDark} toggle={toggle} />
