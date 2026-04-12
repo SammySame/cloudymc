@@ -3,7 +3,7 @@ import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import schemaFile from '../assets/bundled.schema.json';
 import uiSchemaFile from '../assets/schemas/main.uischema.json';
 
-function useSchemas() {
+export function useSchemas() {
 	const [schema, setSchema] = useState<RJSFSchema>(schemaFile as RJSFSchema);
 	const [uiSchema, setUiSchema] = useState<UiSchema>(uiSchemaFile as UiSchema);
 
@@ -23,5 +23,3 @@ function useSchemas() {
 
 	return { schema, uiSchema };
 }
-
-export { useSchemas };
