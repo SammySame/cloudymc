@@ -108,9 +108,9 @@ def stream_job(job_id: str):
 def compose_file_exists():
 	user_data_path = load_environment_variable('USER_DATA_PATH')
 	if os.path.exists(os.path.join(user_data_path, 'compose.yml')):
-		return jsonify(_format_response('Custom compose file exists')), 200
+		return jsonify(_format_response('Custom compose file exists', True)), 200
 	else:
-		return jsonify(_format_response('Custom compose file does not exist')), 204
+		return jsonify(_format_response('Custom compose file does not exist', False)), 204
 
 
 def _format_response(msg: str, data: Any | None = None):
