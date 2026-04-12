@@ -41,7 +41,6 @@ export function useInstanceManager(formRef: RefObject<RJSFForm | null>) {
 	const checkComposeFileExists = async () => {
 		const exists = await getBackend('/api/compose-file-exists');
 		if (exists !== null) setComposeFileExists(exists);
-		console.log('Compose file:', exists);
 	};
 
 	const performAction = async (action: () => Promise<void>) => {
