@@ -25,7 +25,7 @@ cloudymc_mc_commands_startup: ["say Hello World!"]
 cloudymc_mc_commands_connect: []
 cloudymc_mc_commands_disconnect: []
 
-cloudymc_mc_compose_path:
+cloudymc_mc_compose_path: "{{ lookup('ansible.builtin.env', 'USER_DATA_PATH') }}/compose.yml"
 cloudymc_mc_root_path: /opt/minecraft-server
 cloudymc_mc_data_path: "{{ cloudymc_mc_root_path }}/data"
 cloudymc_mc_memory_mb: "{{ ansible_facts['memtotal_mb'] - 2048 }}"
