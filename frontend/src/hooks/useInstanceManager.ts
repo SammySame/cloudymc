@@ -5,7 +5,7 @@ import { submit, test, destroy, save } from '../api/formHandlers';
 
 export function useInstanceManager(
 	formRef: RefObject<RJSFForm | null>,
-	onError: (text: string) => void
+	onInfo: (header: string, body: string) => void
 ) {
 	const [formData, setFormData] = useState<any>(null);
 	const [instanceAddress, setInstanceAddress] = useState<string>('');
@@ -19,13 +19,13 @@ export function useInstanceManager(
 				const data = await getBackend('/api/forms/load');
 				if (data) setFormData(data);
 			} catch (error) {
-				onError(`Failed to load saved form data: ${error}`);
+				onInfo('Error', `Failed to load saved form data: ${error}`);
 			}
 			getInstanceStatus();
 			checkComposeFileExists();
 		};
 		fetchData();
-	}, [onError]);
+	}, [onInfo]);
 
 	useEffect(() => {
 		const interval = setInterval(getInstanceStatus, 30000);
@@ -48,12 +48,15 @@ export function useInstanceManager(
 
 	const performAction = async (action: () => Promise<void>) => {
 		setIsLoading(true);
+		let failed = false;
 		try {
 			await action();
 		} catch (error) {
-			onError(`Action failed: ${error}`);
+			onInfo('Error', `Action failed: ${error}`);
+			failed = true;
 		} finally {
 			setIsLoading(false);
+			if (!failed) onInfo('Info', 'Action finished successfully');
 			await getInstanceStatus();
 		}
 	};

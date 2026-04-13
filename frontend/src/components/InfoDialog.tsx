@@ -1,25 +1,27 @@
 import { Dialog } from 'primereact/dialog';
 
-type ErrorDialogProps = {
-	text: string;
+type InfoDialogProps = {
+	header: string;
+	body: string;
 	visible: boolean;
 	onClose: () => void;
 };
 
-export default function ErrorDialog({
-	text,
+export default function InfoDialog({
+	header,
+	body,
 	visible,
 	onClose,
-}: ErrorDialogProps) {
+}: InfoDialogProps) {
 	return (
 		<Dialog
-			header="Error"
+			header={header}
 			visible={visible}
 			onHide={onClose}
 			resizable={false}
 			draggable={false}
 		>
-			<p className="m-0">{text}</p>
+			<p className="m-0">{body}</p>
 		</Dialog>
 	);
 }

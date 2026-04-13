@@ -13,26 +13,27 @@ import {
 	FieldErrorTemplate,
 } from './components/FormTemplates';
 import FormControls from './components/FormControls';
-import ErrorDialog from './components/ErrorDialog';
+import InfoDialog from './components/InfoDialog';
 
 import { error } from './api/formHandlers';
 import { useSchemas } from './hooks/useSchemas';
 import { useInstanceManager } from './hooks/useInstanceManager';
-import { useError } from './hooks/useError';
+import { useDialog } from './hooks/useDialog';
 import { minecraftEulaValidator } from './utils/validators';
 
 export default function App() {
 	const { changeTheme } = useContext(PrimeReactContext);
 	const { isDark, toggle } = useTheme();
 
-	const handleError = (text: string) => {
-		console.error(text);
-		showError(text);
+	const handleDialog = (header: string, body: string) => {
+		if (header.toLowerCase() === 'error') console.error(body);
+		else console.info(body);
+		showDialog(header, body);
 	};
 
 	const formRef = useRef<RJSFForm>(null);
 	const { schema, uiSchema } = useSchemas();
-	const { errorText, visible, hideError, showError } = useError();
+	const { header, body, visible, showDialog, hideDialog } = useDialog();
 	const {
 		formData,
 		instanceAddress,
@@ -43,7 +44,7 @@ export default function App() {
 		handleSubmit,
 		handleTest,
 		handleDestroy,
-	} = useInstanceManager(formRef, handleError);
+	} = useInstanceManager(formRef, handleDialog);
 
 	useEffect(() => {
 		changeTheme?.(
@@ -56,7 +57,12 @@ export default function App() {
 
 	return (
 		<>
-			<ErrorDialog text={errorText} visible={visible} onClose={hideError} />
+			<InfoDialog
+				header={header}
+				body={body}
+				visible={visible}
+				onClose={hideDialog}
+			/>
 			<Dialog
 				header="Custom Compose file detected"
 				position="bottom-right"
