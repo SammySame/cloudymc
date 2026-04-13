@@ -172,8 +172,8 @@ RUN --mount=type=bind,source=./backend/requirements/common.txt,target=./backend/
 COPY --link --from=terraform ${TF_PLUGIN_CACHE_PATH} ${TF_PLUGIN_CACHE_PATH}
 COPY --link --from=terraform /usr/local/bin/terraform /usr/local/bin/terraform
 
-COPY --link --from=node-build ${ROOT_PATH}/frontend/dist ./backend/app/static
 COPY ./backend/ ./backend
+COPY --link --from=node-build ${ROOT_PATH}/frontend/dist ./backend/app/static
 COPY ./ansible ./ansible
 COPY ./terraform ./terraform
 
