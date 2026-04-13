@@ -1,4 +1,4 @@
-import { useEffect, useContext, useRef } from 'react';
+import { useEffect, useContext, useRef, useCallback } from 'react';
 import { PrimeReactContext } from 'primereact/api';
 import { Dialog } from 'primereact/dialog';
 import RJSFForm from '@rjsf/core';
@@ -25,15 +25,19 @@ export default function App() {
 	const { changeTheme } = useContext(PrimeReactContext);
 	const { isDark, toggle } = useTheme();
 
-	const handleDialog = (header: string, body: string) => {
-		if (header.toLowerCase() === 'error') console.error(body);
-		else console.info(body);
-		showDialog(header, body);
-	};
-
 	const formRef = useRef<RJSFForm>(null);
 	const { schema, uiSchema } = useSchemas();
 	const { header, body, visible, showDialog, hideDialog } = useDialog();
+
+	const handleDialog = useCallback(
+		(header: string, body: string) => {
+			if (header.toLowerCase() === 'error') console.error(body);
+			else console.info(body);
+			showDialog(header, body);
+		},
+		[showDialog]
+	);
+
 	const {
 		formData,
 		instanceAddress,
