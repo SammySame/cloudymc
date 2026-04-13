@@ -73,6 +73,7 @@
     - custom_server_icon_stat.stat.exists
     - custom_server_icon_stat.stat.isreg
     - custom_server_icon_stat.stat.readable
+  notify: restart minecraft server
 
 - name: create docker compose file
   become: true
