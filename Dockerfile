@@ -34,8 +34,8 @@ RUN groupadd -g ${PGID} ${USERNAME} \
 	&& useradd -u ${PUID} -g ${PGID} -m -s /bin/bash ${USERNAME}
 
 WORKDIR ${ROOT_PATH}
-RUN mkdir -p ${USER_DATA_PATH} \
-	&& chown ${USERNAME}:${USERNAME} ${USER_DATA_PATH}
+RUN mkdir -p ${USER_DATA_PATH} /home/${USERNAME}/.ssh \
+	&& chown ${USERNAME}:${USERNAME} ${USER_DATA_PATH} /home/${USERNAME}/.ssh
 
 COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
