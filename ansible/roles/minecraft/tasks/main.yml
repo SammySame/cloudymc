@@ -51,6 +51,29 @@
     - custom_compose_stat.stat.isreg
     - custom_compose_stat.stat.readable
 
+- name: check if custom server icon exists
+  run_once: true
+  delegate_to: localhost
+  ansible.builtin.stat:
+    path: "{{ cloudymc_mc_server_icon_path }}"
+    get_checksum: false
+    get_mime: false
+    get_attributes: false
+  register: custom_server_icon_stat
+
+- name: import custom server icon
+  become: true
+  ansible.builtin.copy:
+    src: "{{ cloudymc_mc_server_icon_path }}"
+    dest: "{{ cloudymc_mc_data_path }}/server-icon.png"
+    owner: "{{ cloudymc_mc_admin_user }}"
+    group: "{{ cloudymc_mc_admin_group }}"
+    mode: "0664"
+  when:
+    - custom_server_icon_stat.stat.exists
+    - custom_server_icon_stat.stat.isreg
+    - custom_server_icon_stat.stat.readable
+
 - name: create docker compose file
   become: true
   ansible.builtin.template:

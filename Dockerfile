@@ -176,6 +176,7 @@ COPY ./backend/ ./backend
 COPY --link --from=node-build ${ROOT_PATH}/frontend/dist ./backend/app/static
 COPY ./ansible ./ansible
 COPY ./terraform ./terraform
+COPY ./frontend/public/icon.png ${USER_DATA_PATH}/server-icon.png
 
 RUN cd ./terraform && terraform init
 RUN chown -R ${USERNAME}:${USERNAME} ./
