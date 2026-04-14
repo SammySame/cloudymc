@@ -12,7 +12,7 @@ To learn more about Docker, read and watch the official [intrudictionary materia
 
 Create an empty folder and create empty **compose.yml** file inside of it. Next, copy the contents of the following [compose.yml](./compose.yml) file into it.
 
-For Podman Quadlets, you can use the following [cloudymc.container](./cloudymc.container) file.
+For Podman Quadlets, you can use the following [cloudymc.container](./podman.container) file.
 
 If on Linux, modify the **PUID** with your User ID and **PGID** with your Group ID. Use `id -u` and `id -g` to get your User and Group ID respectivelly.
 
