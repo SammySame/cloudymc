@@ -45,3 +45,7 @@ For installation guide, see [CloudyMC Installation Guide](docs/installation.md).
 For configuration guide, see [Minecraft Server Configuration](docs/configuration.md).
 
 For advanced users, guide for [rootless Podman Quadlet Installation](docs/podman.md) is also available.
+
+## Acknowledgments
+
+Shoutout to all the developers being involved in the creation of the software used in this project, and especially [itzg](https://github.com/itzg) with their fantastic [docker-minecraft-server](https://github.com/itzg/docker-minecraft-server) container image that is used on the cloud instance.
