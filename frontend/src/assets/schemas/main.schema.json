@@ -14,10 +14,12 @@
 		},
 		"defaultSshKey": {
 			"type": "string",
+			"default": "mc-default.pub",
 			"minLength": 1
 		},
 		"sftpSshKey": {
 			"type": "string",
+			"default": "mc-sftp.pub",
 			"minLength": 1
 		},
 		"minecraft": { "$ref": "./minecraft.schema.json" },
