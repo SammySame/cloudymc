@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1
+
 ARG PUID=1000
 ARG PGID=1000
 ARG USERNAME=appuser
@@ -20,7 +22,8 @@ ARG TF_PLUGIN_CACHE_PATH
 
 LABEL org.opencontainers.image.title="cloudymc"
 LABEL org.opencontainers.image.description="Run Minecraft servers in cloud!"
-# LABEL org.opencontainers.image.version="1.0.0"
+LABEL org.opencontainers.image.version="0.1.0"
+# LABEL org.opencontainers.image.source="https://my.source.xd"
 LABEL org.opencontainers.image.authors="SammySame"
 
 ARG DEBIAN_FRONTEND=noninteractive
