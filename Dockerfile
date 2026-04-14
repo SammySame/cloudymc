@@ -69,7 +69,7 @@ RUN --mount=type=cache,target=/tmp/tf/ \
 # Terraform copies files from the cache into local .terraform directory
 # so it needs to be baked into the image itself
 RUN --mount=type=cache,target=/tmp/tf-cache \
-	--mount=type=bind,target=./terraform,Z \
+	--mount=type=bind,target=./terraform \
 	mkdir -p ${TF_PLUGIN_CACHE_PATH} \
 	&& cp -rn /tmp/tf-cache/. ${TF_PLUGIN_CACHE_PATH}/ 2>/dev/null || true \
 	&& cd ./terraform && terraform init -input=false \
@@ -90,7 +90,7 @@ FROM python as ansible
 
 # Ansible sources files from the collections directory
 # so it needs to be baked into the image itself
-RUN --mount=type=bind,source=./ansible/requirements.yml,target=./ansible/requirements.yml,Z \
+RUN --mount=type=bind,source=./ansible/requirements.yml,target=./ansible/requirements.yml \
 	--mount=type=cache,target=/tmp/ansible \
 	mkdir -p ${ANSIBLE_COLLECTIONS_PATH} \
 	cp -rn /tmp/ansible/. ${ANSIBLE_COLLECTIONS_PATH}/ 2>/dev/null || true \
@@ -122,8 +122,8 @@ RUN --mount=type=bind,source=./backend/requirements/common.txt,target=./backend/
 	pip install -r ./backend/requirements/dev.txt
 
 RUN --mount=type=cache,target=/root/.npm \
-	--mount=type=bind,source=./frontend/package.json,target=./frontend/package.json,Z \
-	--mount=type=bind,source=./frontend/package-lock.json,target=./frontend/package-lock.json,Z \
+	--mount=type=bind,source=./frontend/package.json,target=./frontend/package.json \
+	--mount=type=bind,source=./frontend/package-lock.json,target=./frontend/package-lock.json \
 	cd ./frontend && npm ci --no-audit --no-fund \
 	&& chown -R ${USERNAME}:${USERNAME} ./node_modules
 
@@ -138,8 +138,8 @@ ARG ROOT_PATH
 
 WORKDIR ${ROOT_PATH}
 RUN --mount=type=cache,target=/root/.npm \
-	--mount=type=bind,source=./frontend/package.json,target=./frontend/package.json,Z \
-	--mount=type=bind,source=./frontend/package-lock.json,target=./frontend/package-lock.json,Z \
+	--mount=type=bind,source=./frontend/package.json,target=./frontend/package.json \
+	--mount=type=bind,source=./frontend/package-lock.json,target=./frontend/package-lock.json \
 	cd ./frontend && npm ci --no-audit --no-fund
 COPY ./frontend/. ./frontend
 RUN cd ./frontend && npm run build

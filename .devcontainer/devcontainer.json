@@ -13,7 +13,7 @@
 	"workspaceFolder": "/app",
 	"workspaceMount": "source=${localWorkspaceFolder},target=${containerWorkspaceFolder},type=bind,consistency=cached",
 	"mounts": [
-		"source=${localWorkspaceFolderBasename}-node_modules,target=${containerWorkspaceFolder}/frontend/node_modules,type=volume,Z"
+		"source=${localWorkspaceFolderBasename}-node_modules,target=${containerWorkspaceFolder}/frontend/node_modules,type=volume"
 	],
 	"onCreateCommand": "/usr/local/bin/entrypoint.sh",
 	"postCreateCommand": "pre-commit install && cd ./terraform && terraform init -input=false",
