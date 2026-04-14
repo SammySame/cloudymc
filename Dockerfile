@@ -28,7 +28,7 @@ LABEL org.opencontainers.image.authors="SammySame"
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
 	&& apt-get install -y --no-install-recommends \
-	openssh-client \
+	openssh-client gosu \
 	&& apt-get clean \
 	&& rm -rf /var/lib/apt/lists/*
 
@@ -108,7 +108,6 @@ RUN --mount=type=bind,source=./ansible/requirements.yml,target=./ansible/require
 
 # ======================= Development =======================
 FROM ansible AS dev
-ARG USERNAME
 
 # VS Code requires en_US.UTF-8 locale for the pre-commit hooks
 # https://github.com/microsoft/vscode/issues/189924
@@ -136,7 +135,6 @@ RUN --mount=type=cache,target=/root/.npm \
 	cd ./frontend && npm ci --no-audit --no-fund \
 	&& chown -R ${USERNAME}:${USERNAME} ./node_modules
 
-USER ${USERNAME}
 EXPOSE 5173
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["sleep", "infinity"]
@@ -178,7 +176,6 @@ COPY ./frontend/public/icon.png ${USER_DATA_PATH}/server-icon.png
 
 RUN cd ./terraform && terraform init
 
-USER ${USERNAME}
 EXPOSE 8000
 VOLUME ${USER_DATA_PATH}
 WORKDIR ${ROOT_PATH}/backend
