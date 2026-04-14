@@ -40,6 +40,8 @@ CloudyMC is a combination of infrastructure automation software packaged into a 
 
 ## Getting started
 
-For installation guide, see [CloudyMC Installation Guide](docs/installation.md#cloudymc-installation-guide).
+For installation guide, see [CloudyMC Installation Guide](docs/installation.md).
 
-For configuration guide, see [Minecraft Server Configuration](docs/configuration.md#minecraft-server-configuration).
+For configuration guide, see [Minecraft Server Configuration](docs/configuration.md).
+
+For advanced users, guide for [rootless Podman Quadlet Installation](docs/podman.md) is also available.
