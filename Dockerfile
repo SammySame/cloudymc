@@ -1,24 +1,18 @@
 # syntax=docker/dockerfile:1
 
+ARG ROOT_PATH=/app
+
+# ======================= Base =======================
+FROM docker.io/library/python:3.13-slim-trixie AS base
 ARG PUID=1000
 ARG PGID=1000
 ARG USERNAME=appuser
-
-ARG ROOT_PATH=/app
+ARG ROOT_PATH
 # Changing USER_DATA_PATH will break things
 ARG USER_DATA_PATH=/etc/cloudymc/data
 ARG PYTHON_VENV_PATH=/opt/venv
 ARG ANSIBLE_COLLECTIONS_PATH=/usr/share/ansible
 ARG TF_PLUGIN_CACHE_PATH=/var/cache/terraform/plugin-cache
-
-# ======================= Base =======================
-FROM docker.io/library/python:3.13-slim-trixie AS base
-ARG PUID
-ARG PGID
-ARG USERNAME
-ARG ROOT_PATH
-ARG USER_DATA_PATH
-ARG TF_PLUGIN_CACHE_PATH
 
 LABEL org.opencontainers.image.title="CloudyMC"
 LABEL org.opencontainers.image.description="Run Minecraft servers in cloud!"
@@ -41,8 +35,13 @@ RUN mkdir -p ${USER_DATA_PATH} /home/${USERNAME}/.ssh
 COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-ENV USER_DATA_PATH=${USER_DATA_PATH} \
-	TF_PLUGIN_CACHE_PATH=${TF_PLUGIN_CACHE_PATH}
+ENV USERNAME=${USERNAME} \
+	ROOT_PATH=${ROOT_PATH} \
+	USER_DATA_PATH=${USER_DATA_PATH} \
+	PYTHON_VENV_PATH=${PYTHON_VENV_PATH} \
+	ANSIBLE_COLLECTIONS_PATH=${ANSIBLE_COLLECTIONS_PATH} \
+	TF_PLUGIN_CACHE_PATH=${TF_PLUGIN_CACHE_PATH} \
+	PATH="${PYTHON_VENV_PATH}/bin:${PATH}"
 
 
 # ======================= Terraform =======================
@@ -79,11 +78,7 @@ RUN --mount=type=cache,target=/tmp/tf-cache \
 
 # ======================= Python =======================
 FROM base as python
-ARG USERNAME
-ARG PYTHON_VENV_PATH
 
-ENV PYTHON_VENV_PATH=${PYTHON_VENV_PATH} \
-	PATH="${PYTHON_VENV_PATH}/bin:${PATH}"
 RUN --mount=type=bind,source=./backend/requirements/common.txt,target=./backend/requirements/common.txt \
 	--mount=type=cache,target=/root/.cache/pip \
 	python3 -m venv ${PYTHON_VENV_PATH} \
@@ -92,12 +87,9 @@ RUN --mount=type=bind,source=./backend/requirements/common.txt,target=./backend/
 
 # ======================= Ansible =======================
 FROM python as ansible
-ARG USERNAME
-ARG ANSIBLE_COLLECTIONS_PATH
 
 # Ansible sources files from the collections directory
 # so it needs to be baked into the image itself
-ENV ANSIBLE_COLLECTIONS_PATH=${ANSIBLE_COLLECTIONS_PATH}
 RUN --mount=type=bind,source=./ansible/requirements.yml,target=./ansible/requirements.yml,Z \
 	--mount=type=cache,target=/tmp/ansible \
 	mkdir -p ${ANSIBLE_COLLECTIONS_PATH} \
@@ -145,7 +137,6 @@ FROM docker.io/library/node:20-alpine AS node-build
 ARG ROOT_PATH
 
 WORKDIR ${ROOT_PATH}
-
 RUN --mount=type=cache,target=/root/.npm \
 	--mount=type=bind,source=./frontend/package.json,target=./frontend/package.json,Z \
 	--mount=type=bind,source=./frontend/package-lock.json,target=./frontend/package-lock.json,Z \
@@ -156,9 +147,6 @@ RUN cd ./frontend && npm run build
 
 # ======================= Production =======================
 FROM ansible AS prod
-ARG USERNAME
-ARG ROOT_PATH
-ARG USER_DATA_PATH
 
 RUN --mount=type=bind,source=./backend/requirements/common.txt,target=./backend/requirements/common.txt \
 	--mount=type=bind,source=./backend/requirements/prod.txt,target=./backend/requirements/prod.txt \
