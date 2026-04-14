@@ -1,5 +1,5 @@
 - name: restart minecraft server
   become: true
   community.docker.docker_compose_v2:
-    project_src: "{{ cloudymc_mc_compose_path | dirname }}"
+    project_src: "{{ cloudymc_mc_compose_path }}"
     state: restarted
