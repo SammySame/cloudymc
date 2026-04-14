@@ -39,6 +39,7 @@ jobs:
           file: ./Dockerfile
           platforms: linux/amd64,linux/arm64
           tags: |
+            org.opencontainers.image.version:${{ inputs.version }}
             ghcr.io/sammysame/cloudymc:${{ inputs.version }}
             ghcr.io/sammysame/cloudymc:latest
           cache-from: type=registry,ref=ghcr.io/sammysame/cloudymc:buildcache
