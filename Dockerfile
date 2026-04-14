@@ -20,10 +20,9 @@ ARG ROOT_PATH
 ARG USER_DATA_PATH
 ARG TF_PLUGIN_CACHE_PATH
 
-LABEL org.opencontainers.image.title="cloudymc"
+LABEL org.opencontainers.image.title="CloudyMC"
 LABEL org.opencontainers.image.description="Run Minecraft servers in cloud!"
-LABEL org.opencontainers.image.version="0.1.0"
-# LABEL org.opencontainers.image.source="https://my.source.xd"
+LABEL org.opencontainers.image.source="https://github.com/SammySame/cloudymc"
 LABEL org.opencontainers.image.authors="SammySame"
 
 ARG DEBIAN_FRONTEND=noninteractive
