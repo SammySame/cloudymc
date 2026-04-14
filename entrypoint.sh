@@ -7,6 +7,6 @@ for dir in "${SUBDIRS[@]}"; do
 	mkdir -p "${USER_DATA_PATH}/${dir}"
 done
 
-chmod 600 "${USER_DATA_PATH}/ssh_keys/*"
+find "${USER_DATA_PATH}/ssh_keys" -type f -exec chmod 600 {} +
 
 exec "$@"
