@@ -1,0 +1,22 @@
+[Unit]
+Description=Minecraft server in cloud
+After=network-online.target
+
+[Container]
+ContainerName=cloudymc
+Image=ghcr.io/sammysame/cloudymc:latest
+Volume=./data:/etc/cloudymc/data:Z
+
+PublishPort=8000:8000
+
+User=root
+UserNS=keep-id:uid=1000,gid=1000
+Memory=512m
+
+DropCapability=all
+AddCapability=CAP_CHOWN CAP_DAC_OVERRIDE CAP_FOWNER CAP_SETUID CAP_SETGID
+NoNewPrivileges=true
+
+[Service]
+Restart=on-failure
+TimeoutSec=90

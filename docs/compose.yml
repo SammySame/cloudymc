@@ -1,0 +1,22 @@
+services:
+  cloudymc:
+    image: ghcr.io/sammysame/cloudymc:latest
+    container_name: cloudymc
+    restart: unless-stopped
+    ports:
+      - 8000:8000
+    environment:
+      PUID: 1000
+      PGID: 1000
+    volumes:
+      - ./data:/etc/cloudymc/data
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - CAP_CHOWN
+      - CAP_DAC_OVERRIDE
+      - CAP_FOWNER
+      - CAP_SETUID
+      - CAP_SETGID
