@@ -93,7 +93,7 @@ FROM python as ansible
 RUN --mount=type=bind,source=./ansible/requirements.yml,target=./ansible/requirements.yml \
 	--mount=type=cache,target=/tmp/ansible \
 	mkdir -p ${ANSIBLE_COLLECTIONS_PATH} \
-	cp -rn /tmp/ansible/. ${ANSIBLE_COLLECTIONS_PATH}/ 2>/dev/null || true \
+	&& cp -rn /tmp/ansible/. ${ANSIBLE_COLLECTIONS_PATH}/ 2>/dev/null || true \
 	&& cd ./ansible && ansible-galaxy collection install --no-deps -r ./requirements.yml \
 	&& cp -rn ${ANSIBLE_COLLECTIONS_PATH}/. /tmp/ansible/ 2>/dev/null || true
 
