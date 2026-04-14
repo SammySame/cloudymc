@@ -10,7 +10,7 @@ At the bottom of the form, you will be able to pick your preferred cloud provide
 
 ## Basic Setup
 
-Fill the form with data and press the **Submit** button. You might have to wait for around 5 minutes on the initial configuration. After it finishes, you will be greeted with a dialog box telling you if the operation succeeded.
+Fill the form with data and press the **Submit** button. You might have to wait for around 5 minutes on the initial configuration. After it finishes, you will be greeted with a dialogue box telling you if the operation succeeded.
 
 If successful, you can copy the IP located at the bottom of the web form and use it in the server address field in the game.
 
@@ -44,4 +44,4 @@ If a custom compose file is created in the **data** directory, you will get noti
 
 SFTP is automatically configured in the cloud instance. To access it, either download an FTP software solution or use terminal commands to access it. Generally, for both CLI and GUI FTP software, you will need instance username, IP and SSH key. You have already created the SFTP SSH key in the initial configuration, it can be found under the **data/ssh_keys/\<your-sftp-key-name>**. The instance IP can be found at the bottom of the web form page. The user is named **minecraft-admin**.
 
-I will only be providing CLI commands, as FTP software can vary vastly. Open your terminal in the **data/ssh_keys** folder and type the following command `sftp -i mc-sftp minecraft-admin@\<my-instance-ip>`. The Minecraft server files are stored under the **minecraft-server** bind mount folder.
+The following example is for CLI (terminal) only. Consult the used FTP software documentation for details. Open your terminal in the **data/ssh_keys** folder and type the following command `sftp -i mc-sftp minecraft-admin@\<my-instance-ip>`. If successful, you should be able to use Linux commands to manipulate the files. The Minecraft server files are stored under the **minecraft-server** bind mount folder.
