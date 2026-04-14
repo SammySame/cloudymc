@@ -36,8 +36,7 @@ RUN groupadd -g ${PGID} ${USERNAME} \
 	&& useradd -u ${PUID} -g ${PGID} -m -s /bin/bash ${USERNAME}
 
 WORKDIR ${ROOT_PATH}
-RUN mkdir -p ${USER_DATA_PATH} /home/${USERNAME}/.ssh \
-	&& chown ${USERNAME}:${USERNAME} ${USER_DATA_PATH} /home/${USERNAME}/.ssh
+RUN mkdir -p ${USER_DATA_PATH} /home/${USERNAME}/.ssh
 
 COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
@@ -88,8 +87,7 @@ ENV PYTHON_VENV_PATH=${PYTHON_VENV_PATH} \
 RUN --mount=type=bind,source=./backend/requirements/common.txt,target=./backend/requirements/common.txt \
 	--mount=type=cache,target=/root/.cache/pip \
 	python3 -m venv ${PYTHON_VENV_PATH} \
-	&& pip install -r ./backend/requirements/common.txt \
-	&& chown ${USERNAME}:${USERNAME} ${PYTHON_VENV_PATH}
+	&& pip install -r ./backend/requirements/common.txt
 
 
 # ======================= Ansible =======================
@@ -105,8 +103,7 @@ RUN --mount=type=bind,source=./ansible/requirements.yml,target=./ansible/require
 	mkdir -p ${ANSIBLE_COLLECTIONS_PATH} \
 	cp -rn /tmp/ansible/. ${ANSIBLE_COLLECTIONS_PATH}/ 2>/dev/null || true \
 	&& cd ./ansible && ansible-galaxy collection install --no-deps -r ./requirements.yml \
-	&& cp -rn ${ANSIBLE_COLLECTIONS_PATH}/. /tmp/ansible/ 2>/dev/null || true \
-	&& chown -R ${USERNAME}:${USERNAME} ${ANSIBLE_COLLECTIONS_PATH}
+	&& cp -rn ${ANSIBLE_COLLECTIONS_PATH}/. /tmp/ansible/ 2>/dev/null || true
 
 
 # ======================= Development =======================
@@ -180,7 +177,6 @@ COPY ./terraform ./terraform
 COPY ./frontend/public/icon.png ${USER_DATA_PATH}/server-icon.png
 
 RUN cd ./terraform && terraform init
-RUN chown -R ${USERNAME}:${USERNAME} ./
 
 USER ${USERNAME}
 EXPOSE 8000
