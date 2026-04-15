@@ -16,6 +16,8 @@ for dir in "${SUBDIRS[@]}"; do
 	mkdir -p "${USER_DATA_PATH}/${dir}"
 done
 
+cp -n "${ROOT_PATH}/backend/app/static/icon.png" "${USER_DATA_PATH}/server-icon.png"
+
 chown -R "${USERNAME}:${USERNAME}" \
 	"${USER_DATA_PATH}" \
 	"/home/${USERNAME}/.ssh" \
