@@ -19,13 +19,13 @@ CloudyMC is a combination of infrastructure automation software packaged into a 
 ## Features
 
 - Ability to configure all the important Minecraft server settings
-- Configuration happens through an intuitive web form
+- Configuration happens through an intuitive web interface
 - Light and dark mode in the web form
 - Advanced form validation that highlights user made errors
 - Apply changes, test them and remove all the cloud instance resources in a click of a button
-- Enables SFTP in a chroot, which allows for secure upload, download, and modification of Minecraft server files
+- Persistent web form configuration living inside JSON file
+- Enables SFTP in a chroot, which allows for secure upload, download, and modification of server files
 - Uses non-root user inside the container by default
-- Customizable server port and ability to define additional ports to be open
 
 ## Supported Cloud Providers
 
