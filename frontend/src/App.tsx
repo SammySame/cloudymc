@@ -40,6 +40,7 @@ export default function App() {
 
 	const {
 		formData,
+		setFormData,
 		instanceAddress,
 		isInstanceRunning,
 		isLoading,
@@ -96,6 +97,7 @@ export default function App() {
 					validator={validator}
 					templates={{ ArrayFieldTitleTemplate, FieldErrorTemplate }}
 					onSubmit={handleSubmit}
+					onChange={(e) => setFormData(e.formData)}
 					onError={error}
 					formData={formData}
 					showErrorList={false}

@@ -101,6 +101,7 @@ export function useInstanceManager(
 
 	return {
 		formData,
+		setFormData,
 		instanceAddress,
 		isInstanceRunning,
 		isLoading,
