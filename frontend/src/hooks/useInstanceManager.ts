@@ -19,7 +19,7 @@ export function useInstanceManager(
 				const data = await getBackend('/api/forms/load');
 				if (data) setFormData(data);
 			} catch (error) {
-				onInfo('Error', `Failed to load saved form data: ${error}`);
+				onInfo('Info', `Failed to load saved form data: ${error}`);
 			}
 			getInstanceStatus();
 			checkComposeFileExists();
