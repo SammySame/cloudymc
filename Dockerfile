@@ -134,7 +134,7 @@ CMD ["sleep", "infinity"]
 
 
 # ======================= Node Build =======================
-FROM docker.io/library/node:20-alpine AS node-build
+FROM --platform=$BUILDPLATFORM docker.io/library/node:20-alpine AS node-build
 ARG ROOT_PATH
 
 WORKDIR ${ROOT_PATH}
