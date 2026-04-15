@@ -44,7 +44,7 @@
 		},
 		"motd": {
 			"type": "string",
-			"default": "Server created with \u00A76CloudyMC\u00A7r\n\u00A79\u00A7nhttps://repo.link.goes.here.xd"
+			"default": "Server created with \u00A76CloudyMC\u00A7r\n\u00A79\u00A7nhttps://github.com/SammySame/cloudymc"
 		},
 		"maxPlayers": {
 			"type": "number",
