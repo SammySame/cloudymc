@@ -52,9 +52,9 @@ If you want to see it in action, see this video showcase https://github.com/user
 
 For installation guide, see [CloudyMC Installation Guide](docs/installation.md).
 
-For configuration guide, see [Minecraft Server Configuration](docs/configuration.md).
+For advanced configuration (e.g. modded servers), see [Minecraft Server Configuration](docs/advanced.md).
 
-For advanced users, guide for [rootless Podman Quadlet Installation](docs/podman.md) is also available.
+For Podman users, see [rootless Podman Quadlet Installation](docs/podman.md).
 
 ## Acknowledgments
 
