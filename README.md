@@ -16,6 +16,16 @@ CloudyMC is a combination of infrastructure automation software packaged into a 
 > [!IMPORTANT]
 > This project should be treated as an easy way to kickstart a Minecraft server in the cloud. Unless you only need very basic setup, you might get away with using just the web form. But for a long running Minecraft server, it's for the best to create the cloud instance through the web form once, and then provision it manually by direct access into instance via STFP or SSH.
 
+
+<details>
+
+<summary> <u> Media </u> </summary>
+<img width="500" height="720" alt="cloudymc_web_interface_02" src="https://github.com/user-attachments/assets/6e237683-739d-4f38-a579-70529f6d9cbe" />
+<img width="500" height="720" alt="cloudymc_web_interface_01" src="https://github.com/user-attachments/assets/cd902977-a3e2-4e7c-89e5-d6f4b0bd4182" />
+If you want to see it in action, see this video showcase https://github.com/user-attachments/assets/4b0441cb-b19b-4bdd-a9fb-a5e72f9c989a
+
+</details>
+
 ## Features
 
 - Ability to configure all the important Minecraft server settings
