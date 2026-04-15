@@ -57,6 +57,13 @@ For advanced configuration (e.g. modded servers), see [Minecraft Server Configur
 
 For Podman users, see [rootless Podman Quadlet Installation](docs/podman.md).
 
+## Planned Features
+- [ ] Proper unit testing for REST API, Python and cloud resource creation
+- [ ] Logging that doesn't expose user credentials or any sensitive information
+- [ ] Better feedback for error and success messages
+- [ ] Automatic setup for Minecraft server backups with easy download to local machine
+- [ ] More streamlined experience for users using custom compose.yml for Minecraft in Docker image
+
 ## Acknowledgments
 
 Shoutout to all the developers being involved in the creation of the software used in this project, and especially [itzg](https://github.com/itzg) with their fantastic [docker-minecraft-server](https://github.com/itzg/docker-minecraft-server) container image that is used on the cloud instance.
