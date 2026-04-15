@@ -19,10 +19,10 @@ CloudyMC is a combination of infrastructure automation software packaged into a 
 
 <details>
 
-<summary> <u> Media </u> </summary>
+<summary> Media </summary>
 <img width="500" height="720" alt="cloudymc_web_interface_02" src="https://github.com/user-attachments/assets/6e237683-739d-4f38-a579-70529f6d9cbe" />
 <img width="500" height="720" alt="cloudymc_web_interface_01" src="https://github.com/user-attachments/assets/cd902977-a3e2-4e7c-89e5-d6f4b0bd4182" />
-If you want to see it in action, see this video showcase https://github.com/user-attachments/assets/4b0441cb-b19b-4bdd-a9fb-a5e72f9c989a
+<br>If you want to see it in action, see this video showcase https://github.com/user-attachments/assets/4b0441cb-b19b-4bdd-a9fb-a5e72f9c989a
 
 </details>
 
