@@ -78,7 +78,7 @@ RUN --mount=type=cache,target=/tmp/tf-cache \
 
 
 # ======================= Python =======================
-FROM base as python
+FROM base AS python
 
 RUN --mount=type=bind,source=./backend/requirements/common.txt,target=./backend/requirements/common.txt \
 	--mount=type=cache,target=/root/.cache/pip \
@@ -87,7 +87,7 @@ RUN --mount=type=bind,source=./backend/requirements/common.txt,target=./backend/
 
 
 # ======================= Ansible =======================
-FROM python as ansible
+FROM python AS ansible
 
 # Ansible sources files from the collections directory
 # so it needs to be baked into the image itself
