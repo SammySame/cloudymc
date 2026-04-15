@@ -48,6 +48,7 @@ ENV USERNAME=${USERNAME} \
 FROM base AS terraform
 ARG TF_VERSION=1.14.7
 ARG TF_LINT_VERSION=v0.61.0
+ARG TARGETARCH
 
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
@@ -57,11 +58,11 @@ RUN apt-get update \
 	&& rm -rf /var/lib/apt/lists/*
 
 RUN --mount=type=cache,target=/tmp/tf/ \
-	wget -q https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip \
+	wget -q https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_${TARGETARCH}.zip \
 	-O /tmp/tf/terraform.zip \
 	&& unzip -q /tmp/tf/terraform.zip terraform -d /usr/local/bin \
 	&& chmod +x /usr/local/bin/terraform \
-	&& wget -q https://github.com/terraform-linters/tflint/releases/download/${TF_LINT_VERSION}/tflint_linux_amd64.zip \
+	&& wget -q https://github.com/terraform-linters/tflint/releases/download/${TF_LINT_VERSION}/tflint_linux_${TARGETARCH}.zip \
 	-O /tmp/tf/tflint.zip \
 	&& unzip -q /tmp/tf/tflint.zip tflint -d /usr/local/bin \
 	&& chmod +x /usr/local/bin/tflint
