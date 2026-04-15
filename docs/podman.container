@@ -10,7 +10,7 @@ Volume=./data:/etc/cloudymc/data:Z
 PublishPort=8000:8000
 
 User=root
-UserNS=keep-id:uid=1000,gid=1000
+UserNS=keep-id
 Memory=512m
 
 DropCapability=all
